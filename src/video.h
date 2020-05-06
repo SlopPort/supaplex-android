@@ -23,14 +23,6 @@
 #define kScreenWidth 320
 #define kScreenHeight 200
 
-#ifdef __vita__
-static const int kWindowWidth = kScreenWidth;
-static const int kWindowHeight = kScreenHeight;
-#else
-static const int kWindowWidth = kScreenWidth * 4;
-static const int kWindowHeight = kScreenHeight * 4;
-#endif
-
 typedef struct
 {
     uint8_t r;
