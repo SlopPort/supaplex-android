@@ -17,16 +17,6 @@
 
 #include "virtualKeyboard.h"
 
-uint8_t isRealKeyboardSupported(void)
-{
-    return 1;
-}
-
-uint8_t isVirtualKeyboardSupported(void)
-{
-    return 0;
-}
-
 uint8_t inputVirtualKeyboardText(const char *title, uint16_t maxLength, char *outText)
 {
     return 0;
