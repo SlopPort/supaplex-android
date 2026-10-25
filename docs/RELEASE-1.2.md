@@ -1,6 +1,8 @@
-# Supaplex Offline for Android 1.2
+# Supaplex for Android 1.2
 
-A native Android adaptation of OpenSupaplex with original graphics and levels, configurable touch controls, gamepad input, and a manual mid-level continuation save. No ads, purchases, accounts, telemetry, or network permission.
+This is an Android port of the original PC/DOS game Supaplex, based on OpenSupaplex. It is a separate project from the Android version available on Google Play, not a modification of that app.
+
+A native Android adaptation of OpenSupaplex with original graphics and levels, configurable touch controls, gamepad input, and a manual mid-level continuation save.
 
 ## Download and play
 

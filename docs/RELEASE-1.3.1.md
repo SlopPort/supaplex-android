@@ -1,4 +1,6 @@
-# Supaplex Offline for Android 1.3.1
+# Supaplex for Android 1.3.1
+
+This is an Android port of the original PC/DOS game Supaplex, based on OpenSupaplex. It is a separate project from the Android version available on Google Play, not a modification of that app.
 
 Smaller action buttons and independent touch sizing in all five movement layouts.
 
@@ -14,6 +16,6 @@ ACTION is smaller by default, including on both sides of the split layout. Confi
 
 Download **Supaplex-Offline-1.3.1.apk** from Assets to install/update. It uses the same debug signing key as published 1.2/1.3 APKs. Do not uninstall or clear data to work around a signature mismatch unless you accept losing saves. The bundled **Supaplex-Offline-1.3.1-sources.zip** includes the pinned required dependencies; **SHA256SUMS.txt** contains download hashes.
 
-Android UI can be Polish or English; DOS menus remain English. No ads, purchases, accounts, or network permission. Android additions and documentation were produced by **Codex, an OpenAI LLM**; upstream authors and licenses remain credited. Fork code is GPL-3.0, with game data separately credited.
+Android UI can be Polish or English; DOS menus remain English. Android additions and documentation were produced by **Codex, an OpenAI LLM**; upstream authors and licenses remain credited. Fork code is GPL-3.0, with game data separately credited.
 
 [Touch guide](https://github.com/SlopPort/supaplex-android/blob/main/docs/TOUCH-CONTROLS.md) · [Build guide](https://github.com/SlopPort/supaplex-android/blob/main/docs/BUILDING.md)

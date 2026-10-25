@@ -1,6 +1,8 @@
-# Supaplex Offline for Android 1.3
+# Supaplex for Android 1.3
 
-This update adds language selection and more precise touch-control choices to the native OpenSupaplex Android port. No ads, purchases, accounts, or network permission.
+This is an Android port of the original PC/DOS game Supaplex, based on OpenSupaplex. It is a separate project from the Android version available on Google Play, not a modification of that app.
+
+This update adds language selection and more precise touch-control choices to the native OpenSupaplex Android port.
 
 ## New in 1.3
 

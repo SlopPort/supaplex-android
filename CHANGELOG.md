@@ -36,4 +36,4 @@ These versions describe the Android adaptation, not OpenSupaplex's own release n
 
 ## 1.0
 
-- Introduced the native OpenSupaplex Android build, player-name keyboard integration, bundled game resources, and offline packaging without ads or purchases.
+- Introduced the native OpenSupaplex Android build, player-name keyboard integration, bundled game resources, and Android packaging for the PC/DOS game.
