@@ -1,0 +1,21 @@
+{
+  "version": "1.4",
+  "apk_sha256": "e137ef25d658e4e59cf2e856d4f0983107e67c6fd4b408a7c1f5d24878b079cf",
+  "device": "Huawei P9 lite / VNS-L21, LineageOS Android 10 / API 29",
+  "build": "assembleDebug assembleDebugAndroidTest lintDebug passed",
+  "generated_fixture_checks": {
+    "passed": 25,
+    "failed": 0
+  },
+  "manual_picker_gameplay_speaker_test": "not performed",
+  "native_engine": "unchanged from 1.3.1",
+  "apk_assets": [
+    "assets/licenses/OpenSupaplex-GPL-3.0.txt",
+    "assets/licenses/SDL2-zlib.txt",
+    "assets/licenses/SDL2_mixer-zlib.txt",
+    "assets/licenses/libxmp.txt"
+  ],
+  "signing_certificate_matches_1_3_1": true,
+  "zip_alignment": "16 KB verified",
+  "audio": "new procedural generator, seven effects; Android decoder accepted generated exit WAV; no listening test"
+}

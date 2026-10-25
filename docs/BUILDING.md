@@ -32,7 +32,7 @@ git -C vendor/SDL_mixer submodule update --init external/libxmp
 
 These targeted submodule commands fetch only the dependencies needed by this build. Git records their exact commits; do not substitute SDL3 or an arbitrary newer branch. See the [dependency record](../evidence/source-commits.json).
 
-GitHub's automatic **Source code** ZIP does not contain submodule contents. The release attachment `Supaplex-Offline-1.3.1-sources.zip` includes them. If using that attachment, extract it, open a terminal in its `supaplex-android` folder, and continue at step 2; no submodule commands are needed.
+GitHub's automatic **Source code** ZIP does not contain submodule contents. The release attachment `Supaplex-Android-1.4-sources.zip` includes them. If using that attachment, extract it, open a terminal in its `supaplex-android` folder, and continue at step 2; no submodule commands are needed.
 
 ## 2. Locate your SDK and JDK
 
@@ -88,7 +88,7 @@ Replace `DEVICE_ID` with the intended phone's ID from that list. It is a placeho
 
 ```sh
 adb -s DEVICE_ID install -r android/app/build/outputs/apk/debug/app-debug.apk
-adb -s DEVICE_ID shell am start -n pl.offline.supaplex/.GameActivity
+adb -s DEVICE_ID shell am start -n pl.offline.supaplex/.ImportActivity
 ```
 
 `-r` preserves app data when Android accepts the update's signature. A different debug key prevents updating an existing installation; read [save-data precautions](ANDROID.md#updates-and-save-data). Do not clear app data during normal builds/tests.
@@ -98,3 +98,7 @@ adb -s DEVICE_ID shell am start -n pl.offline.supaplex/.GameActivity
 An optional GitHub Actions template is provided at `ci/android-apk.yml.example`. It builds the APK, test APK, and lint report. It is not enabled or CI-validated in this repository. To enable it on your own repository, copy it to `.github/workflows/android.yml` and push using credentials authorized to edit workflows. Device tests are manual; the template does not run them. Upstream workflows are archived in `docs/upstream/workflows`.
 
 Local and CI debug APKs may have different signatures. CI artifacts are test builds, not a guaranteed update channel for the downloadable APK. A stable release-signing key is needed for a long-term update channel. No signing keys are included in this repository.
+
+## User-supplied game data
+
+The APK build requires no original game files. `verifyNoGameData` rejects non-license files in Android assets. Never add original resources, game-derived icons, screenshots, audio, or community replays containing levels to this repository or a release archive. To play, import a personal PC/DOS copy using the [data guide](GAME-DATA.md). Other inherited desktop/console build scripts may expect a local `resources` directory; provide that privately and do not commit or distribute it.

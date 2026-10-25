@@ -4,17 +4,17 @@
 
 The new Android adaptation, touch interface, continuation integration, test automation, and documentation in this fork were produced by **Codex, an OpenAI large language model (LLM)**. This attribution applies to the fork's additions, not to the original game or inherited code. The publishing account does not replace the authors credited below.
 
-The fork's C/Java integration code is distributed under GPL-3.0, consistent with OpenSupaplex. Existing copyright headers, licenses, and upstream Git history are retained.
+The fork's C/Java integration code is distributed under GPL-3.0, consistent with OpenSupaplex. Existing copyright headers, licenses and upstream attribution are retained. Provenance is recorded in `evidence/source-commits.json`; history is sanitized to exclude game data.
 
 ## Game and engine
 
-- **Supaplex and its original data:** the original developers and other credited contributors retain their rights. This repository's GPL license for code does not relicense the game graphics, levels, or other data. The upstream OpenSupaplex README describes the original resources as freeware belonging to their original authors. Original data documentation is retained in `resources` and in `android/app/src/main/assets/game`; preserve its notices when redistributing.
+- **Supaplex and its original data:** original graphics, levels, audio and other game resources are not distributed with this port. Users must import files from their own legally obtained PC/DOS copy. Those files retain their owners' rights; GPL does not apply to them. Upstream describes its original resources as freeware, which is distinct from an open-source license.
 - **[OpenSupaplex](https://github.com/sergiou87/open-supaplex):** C reimplementation by Sergio Padrino and contributors, GPL-3.0. Base commit: `2ae9e5815c508c15e405892db486495d28f74f6d`. See [LICENSE](LICENSE), original source headers, and the [archived upstream README](docs/upstream/README.md).
 - **[cilliemalan/supaplex](https://github.com/cilliemalan/supaplex):** the disassembly underlying OpenSupaplex; the included assembly tree has its own MIT license at `asm/LICENSE`.
-- **Audio:** MOD/WAV files are inherited from the OpenSupaplex resource distribution, rather than newly composed or extracted from a commercial Android APK. Original resource credits remain applicable.
-- **Replay fixtures:** recorded solutions remain attributed to their authors as described in `tests/README.md`; the Android adaptation does not claim authorship of them.
+- **Audio:** no original game audio is bundled. `GeneratedAudio.java` is a new GPL-3.0 procedural generator by Codex (LLM); it creates seven replacement effects without original samples or melodies. Compatible user-supplied WAV/XM files may optionally be imported and retain their own rights. Original music is not recreated.
+- **Replay fixtures:** historical community recordings that contained level data have been removed from this distribution. Historical validation summaries do not distribute those fixtures.
 
-The Android asset directory includes the original 111-level set and additional sets already provided by OpenSupaplex. Selected original DOS data files were matched/imported for this port; [evidence/dos-assets.json](evidence/dos-assets.json) records hashes. A commercial Android APK is not part of the published source or runtime.
+Earlier Android releases contained game resources; their downloadable packages have been withdrawn. Importing user data never imports executables, player lists, settings, or save files. Code and dependency licenses remain included.
 
 ## Runtime and build dependencies
 

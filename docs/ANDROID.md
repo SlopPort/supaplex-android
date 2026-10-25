@@ -1,6 +1,6 @@
 # Android play guide
 
-Start with the [installation instructions](../README.md#install-and-start-playing). This guide refers to version 1.3.1. On first launch, choose Polski or English. The choice is remembered and can be changed through Pause → Language / Język without restarting gameplay. Original DOS menus remain English. The table below pairs the Polish labels with their English meanings.
+Start with the [installation instructions](../README.md#install-and-start-playing). This guide refers to version 1.4. Import your own PC/DOS data before playing; see [game-data setup](GAME-DATA.md). On first launch, choose Polski or English. The choice is remembered and can be changed through Pause → Language / Język without restarting gameplay. Original DOS menus remain English. The table below pairs the Polish labels with their English meanings.
 
 ## Pause menu labels
 
@@ -66,7 +66,7 @@ Touch controls hide after gamepad input when that option is enabled. A small but
 
 Updating the same package (`pl.offline.supaplex`) with the **same signing key** preserves private save data and settings. Uninstalling or using Android's **Clear storage / Clear data** removes them. There is no in-app export or cloud backup feature.
 
-The downloadable 1.3.1 APK uses the same Android debug key as 1.2 and 1.3, and can update those installations without clearing saves. A build made on another computer normally has a different key even if the package name matches. Android may reject that update with a signature mismatch. Keep the existing installation and its data; do not uninstall unless you accept losing that data. Developers should use a stable private release key for future distribution and never commit it.
+The downloadable 1.4 APK uses the same Android debug key as 1.2, 1.3 and 1.3.1, and can update those installations without clearing saves. The first launch after upgrading requires an explicit import of your own PC/DOS files; previously bundled data is not automatically accepted. A build made on another computer normally has a different key even if the package name matches. Android may reject that update with a signature mismatch. Keep the existing installation and its data; do not uninstall unless you accept losing that data. Developers should use a stable private release key for future distribution and never commit it.
 
 Returning through the launcher after HOME is different from a persistent save: Android can terminate an app in the background. Make a manual save before relying on a later return.
 

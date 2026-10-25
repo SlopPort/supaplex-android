@@ -6,7 +6,7 @@ Start with the [README](README.md) to install/play, or [BUILDING.md](docs/BUILDI
 
 Open an issue with the app version, device model, Android version, and short steps to reproduce. Say what you expected and what happened. For controller problems, include the controller model and the controls that work or fail. For save problems, say whether you used Save, Save and quit, or Resume.
 
-Do not post personal names, device serials, Bluetooth addresses, signing keys, or unredacted system logs. Crop screenshots if they contain private information. A small replay demonstrating an engine problem can be useful, but do not upload personal save data by default.
+Do not post personal names, device serials, Bluetooth addresses, signing keys, or unredacted system logs. Do not upload game files, game-derived screenshots, audio, archives, personal saves, or replays containing level data. Use text reproduction steps and, when needed, synthetic fixtures that you have the right to license with the code.
 
 ## Submit a change
 

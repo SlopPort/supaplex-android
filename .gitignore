@@ -101,3 +101,8 @@ android/*build-log.txt
 *.log
 *.hprof
 .idea/
+
+# Player-supplied game data must never be committed
+/resources/**
+/android/app/src/main/assets/game/**
+/private-game-data/

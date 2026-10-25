@@ -13,7 +13,8 @@ public class HudInstrumentation extends Instrumentation {
     private long down;
     private float unit,w,h;
     private StringBuilder results=new StringBuilder();
-    @Override public void onCreate(Bundle args) { super.onCreate(args);start(); }
+    private boolean importOnly;
+    @Override public void onCreate(Bundle args) { importOnly=args!=null && "true".equals(args.getString("importOnly"));super.onCreate(args);start(); }
     private void check(boolean ok,String name) { if(!ok)throw new AssertionError(name);results.append("PASS ").append(name).append('\n'); }
     private Object field(String name) throws Exception {Field f=GameActivity.class.getDeclaredField(name);f.setAccessible(true);return f.get(activity);}
     private HashSet<Integer> held() throws Exception {
@@ -136,6 +137,7 @@ public class HudInstrumentation extends Instrumentation {
         runOnMainSync(() -> {try{language.invoke(activity,chosen);}catch(Exception e){throw new RuntimeException(e);}});
     }
     @Override public void onStart() {
+        if(importOnly) {ImportInstrumentation.run(this);return;}
         Bundle out=new Bundle();
         int resultCode=Activity.RESULT_OK;
         android.content.SharedPreferences settings=getTargetContext().getSharedPreferences("touch-controls",Context.MODE_PRIVATE);

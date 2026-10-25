@@ -8,8 +8,8 @@ android {
   testInstrumentationRunner 'pl.offline.supaplex.HudInstrumentation'
   minSdk 21
   targetSdk 35
-  versionCode 5
-  versionName '1.3.1'
+  versionCode 6
+  versionName '1.4'
   ndk { abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86' }
   externalNativeBuild { cmake { arguments '-DANDROID_STL=c++_static', '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'; targets 'main' } }
  }
@@ -18,3 +18,12 @@ android {
  buildTypes { release { minifyEnabled false } }
  packaging { jniLibs { useLegacyPackaging false } }
 }
+
+// Game resources must be supplied by the player, never packaged in the APK.
+tasks.register('verifyNoGameData') {
+ doLast {
+  def forbidden = fileTree('src/main/assets').matching { exclude 'licenses/**' }.files
+  if (!forbidden.empty) throw new GradleException('Only dependency licenses may be bundled as assets')
+ }
+}
+tasks.named('preBuild').configure { dependsOn 'verifyNoGameData' }

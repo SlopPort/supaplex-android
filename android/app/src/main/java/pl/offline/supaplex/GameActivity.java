@@ -150,23 +150,9 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     public static native void nativeSetAspect(boolean preserve);
     public static native void nativeSetOverlayPaused(boolean paused);
     @Override protected String[] getLibraries() { return new String[]{"SDL2", "SDL2_mixer", "main"}; }
-    private void copyAssets(String source, File destination) throws IOException {
-        String[] children = getAssets().list(source);
-        if (children.length > 0) {
-            destination.mkdirs();
-            for (String child : children) copyAssets(source + "/" + child, new File(destination, child));
-        } else if (!destination.exists()) {
-            try (InputStream in = getAssets().open(source); OutputStream out = new FileOutputStream(destination)) {
-                byte[] buffer = new byte[16384]; int count;
-                while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
-            }
-        }
-    }
     @Override protected void onCreate(Bundle state) {
         prefs = getSharedPreferences("touch-controls", MODE_PRIVATE);
         applyLanguage(prefs.getString("language", Locale.getDefault().getLanguage().equals("pl")?"pl":"en"));
-        try { copyAssets("game", getFilesDir()); }
-        catch (IOException e) { throw new IllegalStateException("Cannot install game data", e); }
         super.onCreate(state);
         if (mLayout == null) { startupChoice.countDown(); return; }
         nativeReady = true;

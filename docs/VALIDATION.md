@@ -1,5 +1,14 @@
 # Validation and device tests
 
+## 1.4 — user-supplied game data
+
+- `assembleDebug assembleDebugAndroidTest lintDebug` passed for the import build.
+- 25 generated-fixture import and procedural-audio checks passed on Huawei P9 lite / VNS-L21 with LineageOS Android 10. They cover absent/incomplete data, normalization, allowlisting, traversal, duplicates, size limits, the startup marker and preservation of an existing save. Audio checks cover seven distinct, bounded generated WAV effects, preservation of supplied audio, fallback files for the existing sound modes, absence of generated music, and acceptance of one generated WAV by Android MediaPlayer's decoder. Decoder acceptance is not a speaker or gameplay listening test.
+- Fixtures are generated from zero-filled buffers; no original game resources are packaged with the test APK. These structural checks do not establish that arbitrary imported resources are playable or legally redistributable.
+- Manual system-picker-to-gameplay and speaker tests were not performed for 1.4. Folder-provider behavior, first-time gameplay after import, live speaker output, subjective sound quality, and other Android versions have not been verified for this release. Earlier interface/engine results below are historical, not rerun for this release.
+- Updating the APK preserves existing private data. The new setup requires an explicit user import even if an older version left bundled resources in private storage.
+
+
 ## Version 1.3.1 size update
 
 57 interface checks passed on the same Huawei device. In addition to the 1.3 checks below, the suite checks that direction and ACTION scaling are independent and that minimum-size ACTION remains touchable and releases correctly in all five layouts at 220% direction size and low opacity. Native engine/save code is unchanged. The three slider extremes were also exercised through the real settings UI, checked on disk, and the large-direction/small-ACTION HUD was visually inspected. Existing save data stayed unchanged; previous settings were restored after that check.
@@ -60,3 +69,13 @@ Do not deliberately fill storage or alter files in a personal installation to te
 ## Limits
 
 Minimum SDK 21, four ABIs, and 16 KB alignment are build properties. They are not physical test coverage of Android 5 through all current versions, 16 KB hardware, or every CPU/GPU. Audio output has not had a full live listening comparison. Complete frame-by-frame equivalence to every historical DOS build has not been established.
+
+## Run the 1.4 import and generated-audio checks
+
+Build and install the app and test APK, then run:
+
+```sh
+adb -s DEVICE_ID shell am instrument -w -e importOnly true pl.offline.supaplex.test/pl.offline.supaplex.HudInstrumentation
+```
+
+This selects the generated-fixture import/audio checks through the existing runner; no game data is required. The older HUD checks (without `-e importOnly true`) require compatible game data to be imported first. Their 57-check results above refer to 1.3.1 and were not rerun for 1.4.

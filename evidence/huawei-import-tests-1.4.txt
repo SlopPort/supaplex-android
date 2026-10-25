@@ -1,0 +1,25 @@
+PASS empty installation cannot start
+PASS parent traversal rejected
+PASS player data never imported
+PASS executables never imported
+PASS optional audio recognized
+PASS incomplete data rejected before installation
+PASS duplicate resources rejected
+PASS nested lowercase ZIP normalized and validated
+PASS ZIP excludes saves and traversal
+PASS complete import committed with startup marker
+PASS existing save preserved
+PASS missing installed data blocks startup again
+PASS oversized resource rejected
+PASS valid bounded procedural effect: explosion
+PASS valid bounded procedural effect: infotron
+PASS valid bounded procedural effect: push
+PASS valid bounded procedural effect: fall
+PASS valid bounded procedural effect: bug
+PASS valid bounded procedural effect: base
+PASS valid bounded procedural effect: exit
+PASS seven distinct generated effects
+PASS user-supplied audio is never replaced
+PASS fallback files cover all existing sound modes
+PASS Android decoder accepts generated WAV
+PASS no original music or melody generated
