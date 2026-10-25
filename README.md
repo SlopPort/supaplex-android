@@ -15,6 +15,14 @@ This is a separate project from the Android version available on Google Play; it
 
 The APK is a test build signed with an Android debug key. See [updating without losing saves](docs/ANDROID.md#updates-and-save-data) before replacing an existing installation. Android 5.0 or later and OpenGL ES 2.0 are required by the configuration; this is not a promise that every device works.
 
+## Download the PC/DOS game for free
+
+If you do not already have the PC/DOS files, [Elmer Productions provides a Supaplex download and installation guide](https://www.elmerproductions.com/sp/dlinst.html). Follow its **supaplex.zip** link for the game with SpeedFix. Its [software page](https://www.elmerproductions.com/sp/software.html) also lists game downloads and optional tools; you do not need those extra tools to use this Android port.
+
+Download the game ZIP and copy it to your phone. On Supaplex's first-run import screen, choose **Choose ZIP** and select the archive. If you have already set up the app, use **Pause → Import game files / original sounds**, follow the save/close prompt, and reopen it to reach that screen. You do not need to follow the external page's DOS installation steps: the PC/DOS executable does not run on Android, and this port reads the graphics and level data from the archive. For original Sound Blaster effects, follow the [audio extraction guide](docs/EXTRACT-DOS-AUDIO.md) before importing.
+
+These are external download pages, maintained separately from this project. A free download does not make the original assets open source or grant permission to redistribute them in another app. See [Elmer Productions' rights statement](https://www.elmerproductions.com/sp/faq.html).
+
 ## Original sound effects
 
 The first-run screen explains the generated replacements and links to the [original sound extractor](docs/EXTRACT-DOS-AUDIO.md). The included Python tool converts seven Sound Blaster effects from your own PC/DOS `BLASTER.SND` into compatible WAV files and can create a private importable game ZIP. It does not convert original music.
