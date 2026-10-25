@@ -85,8 +85,10 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         settingNote(body,text(R.string.deadzone_help));
         slider(body,text(R.string.stability),prefs.getFloat("stability",.45f),0f,1f,"stability");
         settingNote(body,text(R.string.stability_help));
-        slider(body,text(R.string.control_size),prefs.getFloat("size",1f),.75f,1.4f,"size");
-        slider(body,text(R.string.control_opacity),prefs.getFloat("opacity",.64f),.25f,.9f,"opacity");
+        slider(body,text(R.string.control_size),prefs.getFloat("size",1f),.75f,2.2f,"size");
+        slider(body,text(R.string.action_size),prefs.getFloat("actionSize",1f),.75f,1.6f,"actionSize");
+        slider(body,text(R.string.control_opacity),prefs.getFloat("opacity",.64f),.10f,1f,"opacity");
+        settingNote(body,text(R.string.control_opacity_help));
         toggle(body,text(R.string.left_handed),"leftHanded",false);
         toggle(body,text(R.string.auto_pad),"autoPad",true);
         ScrollView scroll=new ScrollView(this);scroll.addView(body);
@@ -95,7 +97,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         settingButton(body,text(R.string.reset_controls),() -> new AlertDialog.Builder(this)
             .setTitle(text(R.string.reset_controls)).setMessage(text(R.string.reset_controls_message))
             .setNegativeButton(text(R.string.cancel),null).setPositiveButton(text(R.string.ok),(d,w) -> {
-                prefs.edit().remove("controlStyle").remove("deadzone").remove("stability").remove("size").remove("opacity").remove("leftHanded").remove("autoPad").apply();
+                prefs.edit().remove("controlStyle").remove("deadzone").remove("stability").remove("size").remove("actionSize").remove("opacity").remove("leftHanded").remove("autoPad").apply();
                 refreshControls();dialog.dismiss();showTouchSettings();
             }).show());
         dialog.show();
@@ -304,6 +306,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     private void refreshControls() {
         releaseAll();
         controls.configure(prefs.getFloat("size",1f), prefs.getFloat("opacity",.64f),prefs.getBoolean("leftHanded",false));
+        controls.configureAction(prefs.getFloat("actionSize",1f));
         controls.configureInput(prefs.getInt("controlStyle",TouchControls.BUTTONS),prefs.getFloat("deadzone",.20f),prefs.getFloat("stability",.45f));
     }
     private int dp(int n) { return Math.round(n * getResources().getDisplayMetrics().density); }

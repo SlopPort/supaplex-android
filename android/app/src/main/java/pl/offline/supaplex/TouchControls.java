@@ -13,7 +13,7 @@ public final class TouchControls extends View {
     private final Typeface font = Typeface.create("sans-serif-medium",Typeface.NORMAL);
     private final HashMap<Integer, Finger> fingers = new HashMap<>();
     private final int aqua = 0xff8bffe0;
-    private float unit=1, vw=960, vh=540, size=1, opacity=.64f;
+    private float unit=1, vw=960, vh=540, size=1, actionSize=1, opacity=.64f;
     private float safeLeft, safeRight, safeBottom;
     private boolean leftHanded, padMode, padConnected;
     private float dx,dy,dr,ax,ay,ar,cx,cy,cr,splitX,secondaryActionX;
@@ -30,6 +30,7 @@ public final class TouchControls extends View {
         setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
     void configure(float scale,float alpha,boolean left) { cancelTouches();size=scale;opacity=alpha;leftHanded=left;layoutControls();setContentDescription(game.text(R.string.hud_description));invalidate(); }
+    void configureAction(float scale) { cancelTouches();actionSize=Math.max(.75f,Math.min(1.6f,scale));layoutControls();invalidate(); }
     void configureInput(int mode,float zone,float directionStability) {
         cancelTouches();style=Math.max(BUTTONS,Math.min(SPLIT,mode));deadzone=Math.max(.08f,Math.min(.38f,zone));
         stability=Math.max(0f,Math.min(1f,directionStability));layoutControls();invalidate();
@@ -50,7 +51,7 @@ public final class TouchControls extends View {
         unit=Math.min(w/960f,h/540f); vw=w/unit;vh=h/unit;layoutControls();
     }
     private void layoutControls() {
-        dr=77*size;ar=49*size;cr=27*size;
+        dr=77*size;ar=25*actionSize;cr=24;
         dx=safeLeft/unit+24+dr;dy=vh-safeBottom/unit-40-dr;
         ax=vw-safeRight/unit-30-ar;ay=vh-safeBottom/unit-42-ar;
         cx=vw-safeRight/unit-30-cr;cy=ay-ar-cr-23*size;
@@ -133,17 +134,17 @@ public final class TouchControls extends View {
             drawAction(c,ax,ay);
             if(style==SPLIT)drawAction(c,secondaryActionX,ay);
             circle(c,cx,cy,cr,active("confirm"),false);
-            paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(2.5f*size);paint.setStrokeCap(Paint.Cap.ROUND);color(0xffe6f5ff,1);
-            Path check=path;check.reset();check.moveTo(cx-8*size,cy);check.lineTo(cx-2*size,cy+6*size);check.lineTo(cx+9*size,cy-7*size);c.drawPath(check,paint);paint.setStyle(Paint.Style.FILL);
+            paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(2.5f);paint.setStrokeCap(Paint.Cap.ROUND);color(0xffe6f5ff,1);
+            Path check=path;check.reset();check.moveTo(cx-8,cy);check.lineTo(cx-2,cy+6);check.lineTo(cx+9,cy-7);c.drawPath(check,paint);paint.setStyle(Paint.Style.FILL);
         }
         c.restore();
     }
     private boolean inside(float x,float y,float cx,float cy,float radius) {return Math.hypot(x-cx,y-cy)<=radius;}
     private void drawAction(Canvas c,float x,float y) {
         circle(c,x,y,ar,active("action"),true);
-        c.save();c.translate(x,y-4*size);c.scale(size,size);color(aqua,1);
+        c.save();c.translate(x,y-ar*.16f);c.scale(ar/40f,ar/40f);color(aqua,1);
         Path bolt=path;bolt.reset();bolt.moveTo(3,-19);bolt.lineTo(-12,3);bolt.lineTo(-2,3);bolt.lineTo(-6,18);bolt.lineTo(13,-6);bolt.lineTo(3,-6);bolt.close();c.drawPath(bolt,paint);c.restore();
-        text(c,game.text(R.string.action),x,y+25*size,8.5f*size,aqua,1);
+        text(c,game.text(R.string.action),x,y+ar*.66f,Math.max(6.5f,7.2f*actionSize),aqua,1);
     }
     private int splitButtonAt(float x,float y,boolean vertical) {
         float offset=dr*.65f,half=dr*.28f;

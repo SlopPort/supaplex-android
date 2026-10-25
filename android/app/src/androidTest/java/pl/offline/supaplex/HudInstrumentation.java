@@ -46,6 +46,28 @@ public class HudInstrumentation extends Instrumentation {
             if(node.isClickable() && node.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK))return true;
         return false;
     }
+    private float geometry(TouchControls controls,String name) throws Exception {
+        Field f=TouchControls.class.getDeclaredField(name);f.setAccessible(true);return f.getFloat(controls);
+    }
+    private void sizingChecks(TouchControls controls) throws Exception {
+        float directionRadius=geometry(controls,"dr"),actionRadius=geometry(controls,"ar");
+        runOnMainSync(() -> controls.configure(2.2f,.1f,false));
+        check(geometry(controls,"dr")>directionRadius && geometry(controls,"ar")==actionRadius,"larger directions leave ACTION size unchanged");
+        directionRadius=geometry(controls,"dr");
+        runOnMainSync(() -> controls.configureAction(.75f));float smallAction=geometry(controls,"ar");
+        runOnMainSync(() -> controls.configureAction(1.6f));
+        check(geometry(controls,"ar")>smallAction && geometry(controls,"dr")==directionRadius,"ACTION slider leaves direction size unchanged");
+        runOnMainSync(() -> controls.configureAction(.75f));
+        for(int style=TouchControls.BUTTONS;style<=TouchControls.SPLIT;style++) {
+            mode(controls,style,.45f);float x=geometry(controls,"ax"),y=geometry(controls,"ay");
+            down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,x,y);
+            check(held().contains(KeyEvent.KEYCODE_SPACE),"small ACTION works with 220 percent directions and low opacity in style "+style);
+            single(MotionEvent.ACTION_CANCEL,x,y);SystemClock.sleep(90);
+            checkDirection(0,"small ACTION releases in style "+style);
+        }
+        runOnMainSync(() -> {controls.configure(1,.64f,false);controls.configureAction(1);});
+        mode(controls,TouchControls.BUTTONS,.45f);
+    }
     private void newInputChecks(TouchControls controls,float y) throws Exception {
         mode(controls,TouchControls.BUTTONS,.6f);
         down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);checkDirection(0,"button centre is neutral");
@@ -82,19 +104,20 @@ public class HudInstrumentation extends Instrumentation {
         down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);single(MotionEvent.ACTION_MOVE,101,y-50);
         checkDirection(KeyEvent.KEYCODE_DPAD_UP,"next swipe can choose another direction");single(MotionEvent.ACTION_CANCEL,101,y-50);
         mode(controls,TouchControls.SPLIT,.45f);
+        float splitAction=geometry(controls,"ax"),splitActionLeft=geometry(controls,"secondaryActionX"),splitActionY=geometry(controls,"ay");
         down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);checkDirection(0,"split vertical centre is neutral");
         single(MotionEvent.ACTION_MOVE,101,y-50);checkDirection(KeyEvent.KEYCODE_DPAD_UP,"split left side controls up");
         event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{101,w-51},new float[]{y-50,y},new int[]{0,1});
         checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"split most recent axis wins without a diagonal");
         event(MotionEvent.ACTION_POINTER_UP | (1<<8),new float[]{101,w-51},new float[]{y-50,y},new int[]{0,1});
         checkDirection(KeyEvent.KEYCODE_DPAD_UP,"split release returns to other held direction");
-        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{101,w-79},new float[]{y-50,y-135},new int[]{0,1});
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{101,splitAction},new float[]{y-50,splitActionY},new int[]{0,1});
         check(held().contains(KeyEvent.KEYCODE_DPAD_UP)&&held().contains(KeyEvent.KEYCODE_SPACE),"split vertical plus right-side action with two fingers");
-        event(MotionEvent.ACTION_CANCEL,new float[]{101,w-79},new float[]{y-50,y-135},new int[]{0,1});SystemClock.sleep(90);
-        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,79,y-135);
-        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{79,w-151},new float[]{y-135,y},new int[]{0,1});
+        event(MotionEvent.ACTION_CANCEL,new float[]{101,splitAction},new float[]{y-50,splitActionY},new int[]{0,1});SystemClock.sleep(90);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,splitActionLeft,splitActionY);
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{splitActionLeft,w-151},new float[]{splitActionY,y},new int[]{0,1});
         check(held().contains(KeyEvent.KEYCODE_DPAD_LEFT)&&held().contains(KeyEvent.KEYCODE_SPACE),"split horizontal plus left-side action with two fingers");
-        event(MotionEvent.ACTION_CANCEL,new float[]{79,w-151},new float[]{y-135,y},new int[]{0,1});SystemClock.sleep(90);checkDirection(0,"split cancel releases direction and action");
+        event(MotionEvent.ACTION_CANCEL,new float[]{splitActionLeft,w-151},new float[]{splitActionY,y},new int[]{0,1});SystemClock.sleep(90);checkDirection(0,"split cancel releases direction and action");
         runOnMainSync(() -> controls.configure(1,.64f,true));
         down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,w-101,y-50);
         checkDirection(KeyEvent.KEYCODE_DPAD_UP,"left-handed split mirrors vertical side");
@@ -128,12 +151,13 @@ public class HudInstrumentation extends Instrumentation {
             SystemClock.sleep(700);waitForIdleSync();
             TouchControls controls=(TouchControls)field("controls");
             runOnMainSync(() -> controls.configure(1,.64f,false));
+            runOnMainSync(() -> controls.configureAction(1));
             mode(controls,TouchControls.BUTTONS,.45f);
             w=controls.getWidth();h=controls.getHeight();unit=Math.min(w/960f,h/540f);w/=unit;h/=unit;
             Field surfaceField=Class.forName("org.libsdl.app.SDLActivity").getDeclaredField("mSurface");surfaceField.setAccessible(true);
             View surface=(View)surfaceField.get(null);
             check(surface.getWidth()==controls.getWidth() && surface.getHeight()==controls.getHeight(),"game surface fills screen");
-            float x=151,y=h-117,ax=w-79,ay=h-91;
+            float x=151,y=h-117,ax=geometry(controls,"ax"),ay=geometry(controls,"ay");
             down=SystemClock.uptimeMillis();event(MotionEvent.ACTION_DOWN,new float[]{x},new float[]{y},new int[]{0});
             check(held().contains(KeyEvent.KEYCODE_DPAD_RIGHT),"D-pad right");
             event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{x,ax},new float[]{y,ay},new int[]{0,1});
@@ -150,6 +174,7 @@ public class HudInstrumentation extends Instrumentation {
             event(MotionEvent.ACTION_CANCEL,new float[]{w-151},new float[]{y},new int[]{0});
             runOnMainSync(() -> controls.configure(1,.64f,false));
             newInputChecks(controls,y);
+            sizingChecks(controls);
             runOnMainSync(() -> activity.showOptions());SystemClock.sleep(100);
             check(((AlertDialog)field("options")).isShowing(),"settings dialog opens");
             runOnMainSync(() -> ((AlertDialog)getFieldUnchecked("options")).dismiss());SystemClock.sleep(100);

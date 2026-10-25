@@ -1,0 +1,26 @@
+{
+  "version": "1.3.1",
+  "device": {
+    "model": "Huawei P9 lite / VNS-L21",
+    "android": "LineageOS Android 10 / API 29"
+  },
+  "apk_sha256": "36ac15d93ef21e9b3de1c7bccd3ad6d5296a7c4bd73df227fa65f82c670d7fb6",
+  "build": "assembleDebug assembleDebugAndroidTest lintDebug passed",
+  "interface_checks": {
+    "passed": 57,
+    "failed": 0
+  },
+  "localized_keys": 56,
+  "native_engine": "Unchanged from 1.3; no replay rerun for this touch-size update",
+  "signing_certificate_matches_1_3": true,
+  "permissions": [],
+  "slider_ui_checks": {
+    "direction_max_220_via_slider": true,
+    "action_min_75_via_slider": true,
+    "opacity_min_10_max_100_via_slider": true,
+    "settings_persisted_to_disk": true,
+    "max_size_hud_captured": true,
+    "existing_save_unchanged": true,
+    "original_preferences_restored_after_test": true
+  }
+}

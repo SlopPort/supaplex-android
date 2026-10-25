@@ -32,7 +32,7 @@ git -C vendor/SDL_mixer submodule update --init external/libxmp
 
 These targeted submodule commands fetch only the dependencies needed by this build. Git records their exact commits; do not substitute SDL3 or an arbitrary newer branch. See the [dependency record](../evidence/source-commits.json).
 
-GitHub's automatic **Source code** ZIP does not contain submodule contents. The release attachment `Supaplex-Offline-1.3-sources.zip` includes them. If using that attachment, extract it, open a terminal in its `supaplex-android` folder, and continue at step 2; no submodule commands are needed.
+GitHub's automatic **Source code** ZIP does not contain submodule contents. The release attachment `Supaplex-Offline-1.3.1-sources.zip` includes them. If using that attachment, extract it, open a terminal in its `supaplex-android` folder, and continue at step 2; no submodule commands are needed.
 
 ## 2. Locate your SDK and JDK
 

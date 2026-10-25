@@ -4,11 +4,11 @@ A native Android port of [OpenSupaplex](https://github.com/sergiou87/open-supapl
 
 No ads, purchases, accounts, telemetry, or network permission. The game runs offline after installation.
 
-**Current version: 1.3.** Choose **Polski** or **English** on first launch (also after updating from 1.2). This changes Android buttons, dialogs, hints, and accessibility text. Original DOS artwork and menus remain in English. Change the choice later in **Pause → Language / Język**.
+**Current version: 1.3.1.** Choose **Polski** or **English** on first launch (also after updating from 1.2). This changes Android buttons, dialogs, hints, and accessibility text. Original DOS artwork and menus remain in English. Change the choice later in **Pause → Language / Język**.
 
 ## Install and start playing
 
-1. Open [Releases](https://github.com/SlopPort/supaplex-android/releases) and download `Supaplex-Offline-1.3.apk` from the **Assets** section. You do not need the source ZIP to play.
+1. Open [Releases](https://github.com/SlopPort/supaplex-android/releases) and download `Supaplex-Offline-1.3.1.apk` from the **Assets** section. You do not need the source ZIP to play.
 2. Open the APK on your phone. If Android asks, allow that browser or file manager to install this app. You can turn that permission off afterward.
 3. Open **Supaplex Offline**, choose a language, and skip opening screens with the check-mark button if needed.
 4. In the original game menu, use **NEW PLAYER** to create a player. The Android name dialog is titled **Player name** / **Imię gracza**. Enter a name, confirm with **OK**, then select a level and press the check-mark button to start.
@@ -20,12 +20,14 @@ The APK is a test build signed with an Android debug key. See [updating without 
 | On screen | Action |
 | --- | --- |
 | Direction pad, bottom left | Move Murphy. Slide between directions without lifting your finger. |
-| Large lightning button | Action. Hold it with a direction to collect beside Murphy without moving; hold it to place a red disk when available. |
+| Lightning button (ACTION) | Action. Hold it with a direction to collect beside Murphy without moving; hold it to place a red disk when available. |
 | Check-mark button | Confirm / Enter. |
 | Pause, top right | Pause and open save options. |
 | Three dots, top left | Open the same menu, including touch and display settings. |
 
 The picture fills the screen by default, stretching its proportions. Enable **Preserve picture proportions / Zachowaj proporcje obrazu** in the pause menu for the original proportions. Open **Touch controls / Sterowanie dotykowe** for the movement style, button size, opacity, and left-handed layout; scroll down inside that page for all settings.
+
+Direction size now ranges from **75–220%**, independently of **ACTION button size (75–160%)**. ACTION and confirm are compact by default in every layout. **Button opacity / Widoczność przycisków** ranges from **10–100%**; lower values make the overlay more transparent without changing touch input.
 
 For a gamepad, use the D-pad or left stick to move, **X** for action, **A** to confirm, and **START** to open or close the pause menu. **HOME** goes to Android's home screen. Button letters describe Android/SDL positions; Nintendo controllers can have different printed letters. See the [full controller guide](docs/ANDROID.md#gamepads).
 
@@ -75,7 +77,7 @@ Playing does not require Android Studio. Developers can follow the [build instru
 
 Physical-device testing used a **Huawei P9 lite (VNS-L21), running LineageOS / Android 10, API 29**, not the phone's original Huawei firmware.
 
-- Version 1.3: 45 automated touch/controller/language checks passed. Engine C code is unchanged from 1.2; its 14 regression results are historical, not rerun for this interface update.
+- Version 1.3.1: 57 automated touch/controller/language/size checks passed. Engine C code is unchanged from 1.2; its 14 regression results are historical, not rerun for this interface update.
 - Continuation tests verified the board checksum, position, level, player, time, and frame counter after saving and reopening, plus resume from the original menu and preservation of the previous save when a new save fails.
 - Earlier port validation replayed 334 solutions of the original levels on the same device. That full set was not rerun for 1.2.
 

@@ -2,6 +2,14 @@
 
 These versions describe the Android adaptation, not OpenSupaplex's own release numbering.
 
+## 1.3.1
+
+- Made ACTION compact in all five layouts, including both split-layout copies.
+- Added independent ACTION sizing (75–160%); direction size now ranges up to 220%.
+- Kept confirm compact when enlarging direction controls.
+- Expanded button-opacity range to 10–100% and explained that lower values are more transparent.
+- Existing movement-style, direction-size, opacity, language, and save preferences are retained; touch reset also resets ACTION size.
+
 ## 1.3
 
 - Added first-launch Polish/English selection and live language changes for Android UI; original DOS menus remain English.

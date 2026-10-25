@@ -1,5 +1,9 @@
 # Validation and device tests
 
+## Version 1.3.1 size update
+
+57 interface checks passed on the same Huawei device. In addition to the 1.3 checks below, the suite checks that direction and ACTION scaling are independent and that minimum-size ACTION remains touchable and releases correctly in all five layouts at 220% direction size and low opacity. Native engine/save code is unchanged. The three slider extremes were also exercised through the real settings UI, checked on disk, and the large-direction/small-ACTION HUD was visually inspected. Existing save data stayed unchanged; previous settings were restored after that check.
+
 ## Version 1.3 interface update
 
 The 1.3 update changes Java touch input and Android language resources only. Native engine and save code match 1.2; engine replay tests were not rerun for this interface-only change.
@@ -42,7 +46,7 @@ adb -s DEVICE_ID shell am instrument -w pl.offline.supaplex.test/pl.offline.supa
 
 Save any live play first: `force-stop` closes the app without making a save. The test injects input, opens menus, and changes transient HUD state. Use a test installation rather than an important unsaved run. Installing these APKs requires the same signing key as any existing installation.
 
-A successful 1.3 run prints 45 `PASS` lines and `HUD checks complete`. Building the test APK alone does not run these tests, and the optional GitHub Actions template does not run physical-device tests.
+A successful 1.3.1 run prints 57 `PASS` lines and `HUD checks complete`. Building the test APK alone does not run these tests, and the optional GitHub Actions template does not run physical-device tests.
 
 ## Repeat a continuation check
 

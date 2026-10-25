@@ -23,7 +23,7 @@
     <string name="hide_touch">Hide touch controls</string>
     <string name="yes">Yes / Y</string>
     <string name="no">No / N</string>
-    <string name="control_size">Control size</string>
+    <string name="control_size">Direction size</string>
     <string name="control_opacity">Button opacity</string>
     <string name="left_handed">Left-handed layout</string>
     <string name="preserve_aspect">Preserve picture proportions</string>
@@ -51,7 +51,9 @@
     <string name="stability_help">Larger: more deliberate turns between horizontal and vertical. Centre and lift still stop input immediately. Applies to the two joystick styles.</string>
     <string name="done">Done</string>
     <string name="reset_controls">Reset touch settings</string>
-    <string name="reset_controls_message">Restore four buttons, default size and opacity, right-handed layout, and default dead zone/stability? Saves, language and picture proportions stay unchanged.</string>
+    <string name="reset_controls_message">Restore four buttons, default direction and ACTION sizes, opacity, right-handed layout, and default dead zone/stability? Saves, language and picture proportions stay unchanged.</string>
     <string name="mode_split">Split: up/down | left/right</string>
     <string name="help_split">Up/down on the left, left/right on the right (mirrored in left-handed mode). The most recently pressed direction wins; releasing it returns to the other held direction. ACTION is available on both sides.</string>
+    <string name="action_size">ACTION button size</string>
+    <string name="control_opacity_help">Lower values make the buttons more transparent. Touch input is unchanged.</string>
 </resources>

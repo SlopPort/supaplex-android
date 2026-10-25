@@ -1,4 +1,4 @@
-# Touch controls and language — version 1.3
+# Touch controls and language — version 1.3.1
 
 Choose **Polski** or **English** at first launch. The choice affects Android buttons, dialogs, hints, and the HUD description. It does not translate the original DOS menu artwork. To change it later, open pause and select **Language / Język**. Gameplay remains paused and the Activity is not recreated for a language change.
 
@@ -26,7 +26,10 @@ ACTION appears above the direction buttons on **both sides** in this layout. Hol
 
 - **Dead zone:** 8–38% of movement radius, default 20%. Larger values ignore more small movement near the origin. This affects both joysticks and the initial swipe, not the arrow/split buttons.
 - **Direction stability:** 0–100%, default 45%. Larger values require a clearer change of axis before a joystick switches between horizontal and vertical. Setting zero gives immediate dominant-axis selection. It does not delay release or returning to centre. This setting affects fixed/floating joysticks only.
-- **Size and opacity:** adjust the touch overlay. Left-handed layout mirrors the positions; auto-hide can switch to the gamepad HUD after controller input.
+- **Direction size / Rozmiar kierunków:** 75–220%, default 100%. Resizes the movement arrows or joystick only.
+- **ACTION button size / Rozmiar przycisku AKCJI:** 75–160% of the new compact default, independently of direction size. Both copies in the split layout use this setting. Confirm remains compact.
+- **Button opacity / Widoczność przycisków:** 10–100%, default 64%. Lower values make the controls more transparent; touch behavior is unchanged. This is an overall visibility factor, not a promise that every painted pixel becomes fully opaque at 100%.
+- Left-handed layout mirrors the positions; auto-hide can switch to the gamepad HUD after controller input.
 - **Reset touch settings:** restores the default four-button layout and touch tuning. It preserves the language, picture proportions, and saved game.
 
 Changes are remembered across app launches. The displayed percentages are settings values, not analog movement speeds. The original engine still determines movement and animation timing. A started tile movement can finish after release; these layouts do **not** guarantee exactly one tile per tap.

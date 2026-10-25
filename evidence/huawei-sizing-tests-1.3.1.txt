@@ -1,0 +1,58 @@
+PASS game surface fills screen
+PASS D-pad right
+PASS direction plus action with two fingers
+PASS slide direction while action stays held
+PASS release one finger independently
+PASS cancel releases every key
+PASS left-handed D-pad
+PASS button centre is neutral
+PASS button diagonal gap is neutral
+PASS separate up button
+PASS second movement finger cannot override direction
+PASS movement owner release does not transfer to ignored finger
+PASS fixed joystick dead zone
+PASS fixed joystick right
+PASS diagonal jitter keeps previous axis
+PASS deliberate turn changes axis
+PASS centre stops joystick immediately
+PASS joystick reverses direction
+PASS lifting stops joystick immediately
+PASS zero stability allows immediate axis change
+PASS floating joystick anchors under initial touch
+PASS floating joystick uses touch-relative motion
+PASS floating joystick returns to its own centre
+PASS swipe chooses direction
+PASS swipe locks direction against thumb drift
+PASS swipe hold remains locked at origin
+PASS swipe release stops input
+PASS next swipe can choose another direction
+PASS split vertical centre is neutral
+PASS split left side controls up
+PASS split most recent axis wins without a diagonal
+PASS split release returns to other held direction
+PASS split vertical plus right-side action with two fingers
+PASS split horizontal plus left-side action with two fingers
+PASS split cancel releases direction and action
+PASS left-handed split mirrors vertical side
+PASS split vertical side controls down
+PASS left-handed split mirrors horizontal side
+PASS English UI resource override
+PASS Polish UI resource override
+PASS larger directions leave ACTION size unchanged
+PASS ACTION slider leaves direction size unchanged
+PASS small ACTION works with 220 percent directions and low opacity in style 0
+PASS small ACTION releases in style 0
+PASS small ACTION works with 220 percent directions and low opacity in style 1
+PASS small ACTION releases in style 1
+PASS small ACTION works with 220 percent directions and low opacity in style 2
+PASS small ACTION releases in style 2
+PASS small ACTION works with 220 percent directions and low opacity in style 3
+PASS small ACTION releases in style 3
+PASS small ACTION works with 220 percent directions and low opacity in style 4
+PASS small ACTION releases in style 4
+PASS settings dialog opens
+PASS controller event switches to controller HUD
+PASS controller Capture/Mode opens mobile menu
+PASS controller START opens pause and save
+PASS controller START returns from pause
+HUD checks complete
