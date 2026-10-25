@@ -93,3 +93,7 @@ Re-import UI validation on Huawei exercised Save and quit → reopen → setup, 
 The installed development build passed 87 HUD checks on Huawei P9 lite (Android 10 / API 29), including both full D-pads, direction priority between thumbs, returning to a held direction, neutral centres, independent ACTION sizing, and layout bounds at minimum/maximum size and spacing with mirrored controls. Existing touch, controller menu and language checks also passed. `assembleDebug`, `assembleDebugAndroidTest`, and `lintDebug` passed. The saved-level file and imported music were unchanged after the update and checks.
 
 The two-pad overlay was visually inspected on the device. Comfortable spacing still needs user play feedback. The public release remains 1.4; these additions are in the 1.5 development build. See [test results](../evidence/huawei-touch-tests-1.5.txt) and [validation summary](../evidence/validation-summary-1.5.json).
+
+## Development build 1.5.1: music resume
+
+Repeated play requests now preserve the current track position, and unmuting resumes it. Seven isolated adapter-state checks passed on Huawei; private libxmp diagnostics traversed the complete imported XM order lists twice. The reported short-fragment loop was not reproduced. See [scope and limitations](../evidence/audio-validation-1.5.1.md).

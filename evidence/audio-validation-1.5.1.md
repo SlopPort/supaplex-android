@@ -1,0 +1,11 @@
+# Audio validation — development build 1.5.1
+
+The Android playback adapter previously called `Mix_PlayMusic` for every play request, which restarts the current track. It now leaves playing music in place and resumes paused music. Unloading halts the old track so a replacement starts normally. Other platforms keep their existing behavior.
+
+Seven isolated playback-state assertions passed on Huawei P9 lite / Android 10: initial start, repeated-play position preservation, mute position preservation, unmute without restart, halt/clear on destruction, replacement from the beginning, and a null-track no-op. The test compiles the production adapter against a **simulated mixer clock**, not an audio device. Its source is `tests/audio-resume.c`; build the optional CMake target `audio-resume-test` in an Android native build directory and run the executable on a matching device ABI. No original data is needed.
+
+A separate private-file diagnostic used the bundled libxmp decoder on the same phone. Both imported AdLib and Roland XM files visited all 41 orders and wrapped from order 40 to order 0 twice (approximately 310.6 seconds per pass). The beep XM visited all 79 orders and wrapped from 78 to 0 twice (approximately 288.1 seconds per pass). Decoding ran faster than real time. This checks module progression, not audible playback or Android background/resume behavior. Original files are not included in the repository.
+
+The reported short-fragment loop was not reproduced, so this change fixes a demonstrated restart behavior rather than proving that every reported audio interruption is resolved. The updated APK was installed on the phone; its saved-level file matched the private pre-investigation backup. The APK contains license assets only. `assembleDebug` and `lintDebug` passed.
+
+The reported pipe screenshot was compared with level 5 and the engine movement checks: a downward port requires an empty, idle destination tile two cells below Murphy. In the source level, the first visible port has a base tile beyond it; the second port four columns to its right has empty space beyond it in the source level. No pipe rules or level data were changed. Screenshots and saved-game contents remain private.

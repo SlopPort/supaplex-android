@@ -83,6 +83,8 @@ OpenSupaplex supplies the engine, original presentation, controller foundations,
 
 The [repository comparison](docs/COMPARISON.md) explains what was checked and what is inherited. This is an Android adaptation, not a claim to have invented Supaplex saving or gamepad controls. It aims to preserve OpenSupaplex/SpeedFix behavior; complete equivalence to every historical DOS version has not been established.
 
+The development update **1.5.1** also preserves music position across repeated play requests and mute/unmute. See [audio validation and remaining limitations](evidence/audio-validation-1.5.1.md).
+
 ## Build from source
 
 Playing does not require Android Studio. Developers can follow the [build instructions](docs/BUILDING.md) for SDK versions, dependency setup, and commands. A normal GitHub source ZIP does not contain submodule sources; use the documented Git clone procedure or the bundled source archive attached to the release.

@@ -368,6 +368,17 @@ void playMusic()
         return;
     }
 
+#ifdef __ANDROID__
+    // Menu/level transitions may request playback again for the same track.
+    // Keep its position, including when music was paused by the mute option.
+    // Reloading a track still starts it normally because destroyMusic halts it.
+    if (Mix_PlayingMusic())
+    {
+        if (Mix_PausedMusic()) Mix_ResumeMusic();
+        return;
+    }
+#endif
+
     if(Mix_PlayMusic(gMusic, -1) == -1)
     {
         spLogInfo("Unable to play music file: %s\n", Mix_GetError());
@@ -387,7 +398,12 @@ void stopMusic()
 
 void destroyMusic()
 {
+#ifdef __ANDROID__
+    // Make the next load distinguishable from a paused current track.
+    Mix_HaltMusic();
+#else
     stopMusic();
+#endif
 
     if (gMusic != NULL)
     {

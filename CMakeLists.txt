@@ -29,3 +29,13 @@ add_executable(replay-verifier EXCLUDE_FROM_ALL ${REPLAY_SOURCES} src/null/audio
 target_compile_definitions(replay-verifier PRIVATE HAVE_SDL2=1 SDL_MAIN_HANDLED=1 HEADLESS_TEST=1)
 target_include_directories(replay-verifier PRIVATE vendor/SDL/include)
 target_link_libraries(replay-verifier PRIVATE SDL2 m)
+
+# Isolated adapter regression with a simulated mixer clock; no game assets.
+if(ANDROID)
+ add_executable(audio-resume-test EXCLUDE_FROM_ALL tests/audio-resume.c src/sdl_common/audio.c)
+ target_compile_definitions(audio-resume-test PRIVATE HAVE_SDL2=1)
+ target_include_directories(audio-resume-test PRIVATE vendor/SDL/include vendor/SDL_mixer/include)
+ target_compile_options(audio-resume-test PRIVATE -ffunction-sections -fdata-sections)
+ target_link_options(audio-resume-test PRIVATE "-Wl,--gc-sections")
+ target_link_libraries(audio-resume-test PRIVATE m)
+endif()
