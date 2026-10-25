@@ -7,7 +7,6 @@
     "passed": 25,
     "failed": 0
   },
-  "manual_picker_gameplay_speaker_test": "not performed",
   "native_engine": "unchanged from 1.3.1",
   "apk_assets": [
     "assets/licenses/OpenSupaplex-GPL-3.0.txt",
@@ -17,5 +16,12 @@
   ],
   "signing_certificate_matches_1_3_1": true,
   "zip_alignment": "16 KB verified",
-  "audio": "new procedural generator, seven effects; Android decoder accepted generated exit WAV; no listening test"
+  "audio": "new procedural generator, seven effects; Android decoder accepted generated exit WAV; gameplay playback and volume confirmed on tested phone",
+  "manual_checks": {
+    "system_zip_picker_import": true,
+    "resume_existing_level_after_import": true,
+    "cold_launch_generates_missing_sound_effects": true,
+    "gameplay_sound_and_volume_confirmed_on_device": true,
+    "folder_picker": "not manually verified"
+  }
 }

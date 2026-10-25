@@ -30,7 +30,7 @@ Optional `DEMO0.BIN` through `DEMO9.BIN`, extra `LEVEL.Lnn` / `LEVELS.Dnn` sets 
 
 Standard DOS files alone do not provide converted WAV/XM audio. The port instead generates seven new procedural effects for explosions, infotrons, pushing, falling objects, bugs, base tiles and exits. No original samples or melodies are used; the generator is GPL-3.0 code. The fallback effects use the same timbres across the original sound-device options. Compatible user-supplied WAV files take priority.
 
-Original music is neither included nor recreated; music requires your own compatible XM files. Existing sound-effects volume and mute options still apply. Speaker output and subjective sound quality have not been manually verified for 1.4.
+Original music is neither included nor recreated; music requires your own compatible XM files. Existing sound-effects volume and mute options still apply. Playback and acceptable volume were confirmed during gameplay on the tested Huawei; preferences on other devices may differ.
 
 ## Import limits and stored data
 

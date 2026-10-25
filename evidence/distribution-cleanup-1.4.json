@@ -1,0 +1,11 @@
+{
+  "excluded_historical_paths": 9936,
+  "rewritten_remote_branches_and_tags": 30,
+  "old_releases_withdrawn": [
+    "v1.2",
+    "v1.3",
+    "v1.3.1"
+  ],
+  "scope": "Original game resources, derived artwork and level-containing replay payloads removed from reachable branch/tag history; code authorship retained.",
+  "hosting_limit": "Fork-network detachment and GitHub cache/object cleanup are separate operations; this record does not certify deletion of unreachable server objects or external copies."
+}
