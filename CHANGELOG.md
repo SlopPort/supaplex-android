@@ -2,6 +2,15 @@
 
 These versions describe the Android adaptation, not OpenSupaplex's own release numbering.
 
+## 1.3
+
+- Added first-launch Polish/English selection and live language changes for Android UI; original DOS menus remain English.
+- Added five movement styles: four separate arrows, fixed joystick, floating joystick, swipe-and-hold direction lock, and split up/down versus left/right controls.
+- Added adjustable joystick dead zone and axis stability. Input routing releases the old direction before pressing the new one.
+- Added action buttons on both sides of the split layout and latest-direction priority for simultaneous axis touches.
+- Added an independent touch-settings page, reset option, and percentage labels.
+- Passed 45 device interface checks; native engine/save code is unchanged from 1.2.
+
 ## 1.2
 
 - Added one persistent manual continuation slot during a live level.

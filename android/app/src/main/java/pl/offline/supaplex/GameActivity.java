@@ -17,6 +17,8 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     private final HashMap<Integer, Long> pressedAt = new HashMap<>();
     private final HashMap<Integer, Runnable> releases = new HashMap<>();
     private android.content.SharedPreferences prefs;
+    private Context uiContext;
+    private boolean rebuildingOptions;
     private InputManager inputs;
     private TouchControls controls;
     private boolean nativeReady;
@@ -29,6 +31,75 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     public static native boolean nativeProgressCommand(int command);
     public static native void nativeSelectContinuation();
     private File progressFile() { return new File(getFilesDir(), "CONTINUE.SAV"); }
+    String text(int resource) { return (uiContext==null?this:uiContext).getString(resource); }
+    private void applyLanguage(String language) {
+        android.content.res.Configuration config = new android.content.res.Configuration(getResources().getConfiguration());
+        config.setLocale(new Locale(language.equals("pl")?"pl":"en"));
+        uiContext=createConfigurationContext(config);
+    }
+    private void chooseLanguage(Runnable completed, boolean firstLaunch) {
+        LinearLayout body=new LinearLayout(this);body.setOrientation(LinearLayout.VERTICAL);body.setPadding(dp(24),dp(8),dp(24),dp(12));
+        TextView note=new TextView(this);
+        note.setText(firstLaunch?"Przyciski i okna Androida / Android buttons and dialogs\nMenu DOS: English":text(R.string.language_scope));body.addView(note);
+        AlertDialog dialog=new AlertDialog.Builder(this).setTitle("Język / Language").setView(body).setCancelable(!firstLaunch).create();
+        String[] codes={"pl","en"},names={"Polski","English"};
+        for(int i=0;i<codes.length;i++) {
+            final String code=codes[i];Button button=new Button(this);button.setAllCaps(false);button.setText(names[i]);body.addView(button);
+            button.setOnClickListener(v -> {
+                prefs.edit().putString("language",code).apply();applyLanguage(code);refreshControls();
+                dialog.dismiss();completed.run();
+            });
+        }
+        dialog.show();
+    }
+    private void rebuildOptions() {
+        rebuildingOptions=true;
+        if(options!=null) options.dismiss();
+        options=null;showOptions();rebuildingOptions=false;
+    }
+    private void settingButton(LinearLayout body,String label,Runnable action) {
+        Button button=new Button(this);button.setAllCaps(false);button.setText(label);body.addView(button);
+        button.setOnClickListener(v -> action.run());
+    }
+    private void settingNote(LinearLayout body,String value) {
+        TextView note=new TextView(this);note.setText(value);note.setTextSize(13);note.setPadding(0,dp(6),0,dp(10));body.addView(note);
+    }
+    private void showTouchSettings() {
+        releaseAll();
+        LinearLayout body=new LinearLayout(this);body.setOrientation(LinearLayout.VERTICAL);body.setPadding(dp(24),dp(8),dp(24),dp(12));
+        settingNote(body,text(R.string.controls_intro));
+        RadioGroup group=new RadioGroup(this);body.addView(group);
+        int[] names={R.string.mode_buttons,R.string.mode_fixed,R.string.mode_floating,R.string.mode_swipe,R.string.mode_split};
+        int[] help={R.string.help_buttons,R.string.help_fixed,R.string.help_floating,R.string.help_swipe,R.string.help_split};
+        int selected=Math.max(0,Math.min(TouchControls.SPLIT,prefs.getInt("controlStyle",TouchControls.BUTTONS)));
+        TextView description=new TextView(this);
+        for(int i=0;i<names.length;i++) {
+            RadioButton button=new RadioButton(this);button.setId(100+i);button.setText(text(names[i]));group.addView(button);
+        }
+        group.check(100+selected);description.setText(text(help[selected]));description.setPadding(0,dp(8),0,dp(12));body.addView(description);
+        group.setOnCheckedChangeListener((g,id) -> {
+            int style=id-100;if(style<0 || style>TouchControls.SPLIT)return;
+            prefs.edit().putInt("controlStyle",style).apply();description.setText(text(help[style]));refreshControls();
+        });
+        slider(body,text(R.string.deadzone),prefs.getFloat("deadzone",.20f),.08f,.38f,"deadzone");
+        settingNote(body,text(R.string.deadzone_help));
+        slider(body,text(R.string.stability),prefs.getFloat("stability",.45f),0f,1f,"stability");
+        settingNote(body,text(R.string.stability_help));
+        slider(body,text(R.string.control_size),prefs.getFloat("size",1f),.75f,1.4f,"size");
+        slider(body,text(R.string.control_opacity),prefs.getFloat("opacity",.64f),.25f,.9f,"opacity");
+        toggle(body,text(R.string.left_handed),"leftHanded",false);
+        toggle(body,text(R.string.auto_pad),"autoPad",true);
+        ScrollView scroll=new ScrollView(this);scroll.addView(body);
+        AlertDialog dialog=new AlertDialog.Builder(this).setTitle(text(R.string.controls)).setView(scroll)
+            .setPositiveButton(text(R.string.done),null).create();
+        settingButton(body,text(R.string.reset_controls),() -> new AlertDialog.Builder(this)
+            .setTitle(text(R.string.reset_controls)).setMessage(text(R.string.reset_controls_message))
+            .setNegativeButton(text(R.string.cancel),null).setPositiveButton(text(R.string.ok),(d,w) -> {
+                prefs.edit().remove("controlStyle").remove("deadzone").remove("stability").remove("size").remove("opacity").remove("leftHanded").remove("autoPad").apply();
+                refreshControls();dialog.dismiss();showTouchSettings();
+            }).show());
+        dialog.show();
+    }
     @Override protected String[] getArguments() {
         try { startupChoice.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         if (resumeOnLaunch) { nativeSelectContinuation(); return new String[]{"-v"}; }
@@ -36,29 +107,29 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     }
     private void chooseStartup() {
         if (!progressFile().isFile()) { startupChoice.countDown(); return; }
-        new AlertDialog.Builder(this).setTitle("Wznowić zapisany poziom?")
-            .setMessage("Wrócisz do miejsca, w którym zapisano grę, ze stanem planszy, zebranymi przedmiotami i czasem.")
-            .setPositiveButton("Wznów", (d,w) -> { resumeOnLaunch=true; startupChoice.countDown(); })
-            .setNegativeButton("Menu gry", (d,w) -> startupChoice.countDown())
+        new AlertDialog.Builder(this).setTitle(text(R.string.resume_title))
+            .setMessage(text(R.string.resume_message))
+            .setPositiveButton(text(R.string.resume), (d,w) -> { resumeOnLaunch=true; startupChoice.countDown(); })
+            .setNegativeButton(text(R.string.game_menu), (d,w) -> startupChoice.countDown())
             .setOnCancelListener(d -> startupChoice.countDown()).show();
     }
     private void requestProgress(int command) {
         if (progressBusy) return;
         releaseAll();
         progressBusy = nativeProgressCommand(command);
-        if (!progressBusy) Toast.makeText(this,"Poczekaj na zakończenie poprzedniej operacji.",Toast.LENGTH_SHORT).show();
+        if (!progressBusy) Toast.makeText(this,text(R.string.progress_busy),Toast.LENGTH_SHORT).show();
     }
     public void onProgressResult(int result) {
         runOnUiThread(() -> {
             if (isFinishing()) return;
             progressBusy=false;
             if (result<0) {
-                Toast.makeText(this,"Nie udało się " + (result==-3?"wznowić poziomu.":"zapisać postępu. Poprzedni zapis pozostał bez zmian."),Toast.LENGTH_LONG).show();
+                Toast.makeText(this,text(result==-3?R.string.resume_failed:R.string.save_failed),Toast.LENGTH_LONG).show();
                 return;
             }
             if (result==2) { exitAfterSaving=true; if(options!=null)options.dismiss(); finish(); }
-            else if(result==1) Toast.makeText(this,"Postęp zapisany. Możesz bezpiecznie zamknąć grę.",Toast.LENGTH_LONG).show();
-            else Toast.makeText(this,"Wznowiono zapisany poziom.",Toast.LENGTH_SHORT).show();
+            else if(result==1) Toast.makeText(this,text(R.string.saved),Toast.LENGTH_LONG).show();
+            else Toast.makeText(this,text(R.string.resumed),Toast.LENGTH_SHORT).show();
         });
     }
     private void progressButton(LinearLayout parent,String label,int command,boolean enabled) {
@@ -67,9 +138,9 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         b.setOnClickListener(v -> {
             if(command==3) {
                 Runnable load=() -> {options.dismiss();nativeSetOverlayPaused(true);requestProgress(3);};
-                if(nativeCanSaveProgress()) new AlertDialog.Builder(this).setTitle("Wczytać zapis?")
-                    .setMessage("Niezapisane zmiany bieżącego poziomu zostaną zastąpione.")
-                    .setPositiveButton("Wczytaj",(d,w)->load.run()).setNegativeButton("Anuluj",null).show();
+                if(nativeCanSaveProgress()) new AlertDialog.Builder(this).setTitle(text(R.string.load_title))
+                    .setMessage(text(R.string.load_message))
+                    .setPositiveButton(text(R.string.load),(d,w)->load.run()).setNegativeButton(text(R.string.cancel),null).show();
                 else load.run();
             } else requestProgress(command);
         });
@@ -90,12 +161,13 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         }
     }
     @Override protected void onCreate(Bundle state) {
+        prefs = getSharedPreferences("touch-controls", MODE_PRIVATE);
+        applyLanguage(prefs.getString("language", Locale.getDefault().getLanguage().equals("pl")?"pl":"en"));
         try { copyAssets("game", getFilesDir()); }
         catch (IOException e) { throw new IllegalStateException("Cannot install game data", e); }
         super.onCreate(state);
         if (mLayout == null) { startupChoice.countDown(); return; }
         nativeReady = true;
-        prefs = getSharedPreferences("touch-controls", MODE_PRIVATE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams p = getWindow().getAttributes();
@@ -105,13 +177,14 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         mSurface.setLayoutParams(new android.widget.RelativeLayout.LayoutParams(-1, -1));
         controls = new TouchControls(this);
         mLayout.addView(controls, new android.widget.RelativeLayout.LayoutParams(-1, -1));
-        controls.configure(prefs.getFloat("size", 1f), prefs.getFloat("opacity", .64f), prefs.getBoolean("leftHanded", false));
+        refreshControls();
         nativeSetAspect(prefs.getBoolean("aspect", false));
         inputs = (InputManager)getSystemService(INPUT_SERVICE);
         inputs.registerInputDeviceListener(this, keysHandler);
         updatePadPresence();
         immersive();
-        chooseStartup();
+        if (prefs.contains("language")) chooseStartup();
+        else chooseLanguage(this::chooseStartup, true);
     }
     private void immersive() {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -124,11 +197,8 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         if (focus) immersive();
     }
     void setTouchKeys(Set<Integer> desired) {
-        for (int code : desired) {
-            Runnable pending = releases.remove(code);
-            if (pending != null) keysHandler.removeCallbacks(pending);
-            if (held.add(code)) { pressedAt.put(code, SystemClock.uptimeMillis()); onNativeKeyDown(code); }
-        }
+        // Release the old direction before pressing a new one, so SDL never
+        // briefly sees both axes held during a deliberate turn.
         for (int code : new HashSet<>(held)) {
             if (desired.contains(code) || releases.containsKey(code)) continue;
             long minimum = code == KeyEvent.KEYCODE_SPACE || code == KeyEvent.KEYCODE_ENTER ? 75 : 0;
@@ -139,6 +209,11 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
             };
             releases.put(code, release);
             if (delay == 0) release.run(); else keysHandler.postDelayed(release, delay);
+        }
+        for (int code : desired) {
+            Runnable pending = releases.remove(code);
+            if (pending != null) keysHandler.removeCallbacks(pending);
+            if (held.add(code)) { pressedAt.put(code, SystemClock.uptimeMillis()); onNativeKeyDown(code); }
         }
     }
     private void releaseAll() {
@@ -164,30 +239,28 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         LinearLayout body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL); body.setPadding(dp(24), dp(8), dp(24), dp(12));
         TextView hint = new TextView(this);
-        hint.setText("Kierunki + AKCJA: zbieranie obok Murphy\u2019ego. Przytrzymaj AKCJ\u0118, aby po\u0142o\u017cy\u0107 czerwony dysk.\nPad: krzy\u017cak / lewa ga\u0142ka \u00b7 X: akcja \u00b7 A: OK \u00b7 B: wstecz \u00b7 START: pauza.");
+        hint.setText(text(R.string.control_hint));
         hint.setTextSize(13); hint.setTextColor(0xffa9bac4);
         LinearLayout actions = new LinearLayout(this);
         boolean canSave = nativeCanSaveProgress();
-        progressButton(body, "Zapisz postęp poziomu", 1, canSave);
-        progressButton(body, "Zapisz i zakończ", 2, canSave);
-        String stamp = progressFile().isFile() ? " (" + new java.text.SimpleDateFormat("dd.MM HH:mm", java.util.Locale.getDefault()).format(new java.util.Date(progressFile().lastModified())) + ")" : "";
-        progressButton(body, "Wznów zapisany poziom"+stamp, 3, progressFile().isFile());
+        progressButton(body, text(R.string.save_progress), 1, canSave);
+        progressButton(body, text(R.string.save_exit), 2, canSave);
+        String stamp = progressFile().isFile() ? " (" + new java.text.SimpleDateFormat("dd.MM HH:mm", new Locale(prefs.getString("language","en"))).format(new java.util.Date(progressFile().lastModified())) + ")" : "";
+        progressButton(body, text(R.string.resume_saved)+stamp, 3, progressFile().isFile());
+        settingButton(body, text(R.string.controls), this::showTouchSettings);
+        settingButton(body, text(R.string.language), () -> chooseLanguage(this::rebuildOptions, false));
         body.addView(actions);
-        optionAction(actions, "Wstecz", KeyEvent.KEYCODE_ESCAPE, false);
+        optionAction(actions, text(R.string.back_original), KeyEvent.KEYCODE_ESCAPE, false);
         body.addView(hint);
-        Button hide = new Button(this); hide.setText("Ukryj przyciski dotykowe"); hide.setAllCaps(false);
+        Button hide = new Button(this); hide.setText(text(R.string.hide_touch)); hide.setAllCaps(false);
         body.addView(hide); hide.setOnClickListener(v -> { controls.setPadMode(true); options.dismiss(); });
         LinearLayout answers = new LinearLayout(this); body.addView(answers);
-        optionAction(answers, "Tak / Y", KeyEvent.KEYCODE_Y, false);
-        optionAction(answers, "Nie / N", KeyEvent.KEYCODE_N, false);
-        slider(body, "Rozmiar sterowania", prefs.getFloat("size", 1f), .75f, 1.4f, "size");
-        slider(body, "Widoczno\u015b\u0107 przycisk\u00f3w", prefs.getFloat("opacity", .64f), .25f, .9f, "opacity");
-        toggle(body, "Uk\u0142ad dla lewor\u0119cznych", "leftHanded", false);
-        toggle(body, "Zachowaj proporcje obrazu", "aspect", false);
-        toggle(body, "Ukrywaj dotyk po u\u017cyciu pada", "autoPad", true);
+        optionAction(answers, text(R.string.yes), KeyEvent.KEYCODE_Y, false);
+        optionAction(answers, text(R.string.no), KeyEvent.KEYCODE_N, false);
+        toggle(body, text(R.string.preserve_aspect), "aspect", false);
         ScrollView scroll = new ScrollView(this); scroll.addView(body);
-        options = new AlertDialog.Builder(this).setTitle("Pauza i zapis gry").setView(scroll)
-            .setPositiveButton("Wr\u00f3\u0107 do gry", null).create();
+        options = new AlertDialog.Builder(this).setTitle(text(R.string.pause_title)).setView(scroll)
+            .setPositiveButton(text(R.string.return_game), null).create();
         options.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BUTTON_START || keyCode == KeyEvent.KEYCODE_BUTTON_MODE || keyCode == KeyEvent.KEYCODE_MENU) {
                 if (event.getAction() == KeyEvent.ACTION_UP) options.dismiss();
@@ -195,7 +268,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
             }
             return false;
         });
-        options.setOnDismissListener(d -> { nativeSetOverlayPaused(false); immersive(); });
+        options.setOnDismissListener(d -> { if(!rebuildingOptions) nativeSetOverlayPaused(false); immersive(); });
         options.show();
     }
     private void optionAction(LinearLayout parent, String label, int key, boolean ctrl) {
@@ -204,14 +277,16 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         b.setOnClickListener(v -> { options.dismiss(); keysHandler.postDelayed(() -> pulse(key, ctrl), 60); });
     }
     private void slider(LinearLayout parent, String label, float value, float min, float max, String name) {
-        TextView title = new TextView(this); title.setText(label); title.setTextSize(14);
+        TextView title = new TextView(this); title.setText(label+" · "+Math.round(value*100)+"%"); title.setTextSize(14);
         title.setPadding(0,dp(8),0,0); parent.addView(title);
         SeekBar bar = new SeekBar(this); bar.setMax(100); bar.setProgress(Math.round((value-min)*100/(max-min)));
         parent.addView(bar);
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar b, int p, boolean user) {
                 if (!user) return;
-                prefs.edit().putFloat(name, min + p * (max-min)/100).apply(); refreshControls();
+                float value=min+p*(max-min)/100;
+                title.setText(label+" · "+Math.round(value*100)+"%");
+                prefs.edit().putFloat(name,value).apply(); refreshControls();
             }
             public void onStartTrackingTouch(SeekBar b) {}
             public void onStopTrackingTouch(SeekBar b) {}
@@ -227,7 +302,9 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         });
     }
     private void refreshControls() {
+        releaseAll();
         controls.configure(prefs.getFloat("size",1f), prefs.getFloat("opacity",.64f),prefs.getBoolean("leftHanded",false));
+        controls.configureInput(prefs.getInt("controlStyle",TouchControls.BUTTONS),prefs.getFloat("deadzone",.20f),prefs.getFloat("stability",.45f));
     }
     private int dp(int n) { return Math.round(n * getResources().getDisplayMetrics().density); }
     public String requestPlayerName(int maxLength) {
@@ -236,9 +313,9 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         runOnUiThread(() -> {
             EditText input = new EditText(this); input.setSingleLine(true);
             input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(maxLength)});
-            new AlertDialog.Builder(this).setTitle("Imi\u0119 gracza").setView(input)
-                .setPositiveButton("OK", (d,w) -> { result[0]=input.getText().toString(); wait.countDown(); })
-                .setNegativeButton("Anuluj", (d,w) -> wait.countDown()).setOnCancelListener(d -> wait.countDown()).show();
+            new AlertDialog.Builder(this).setTitle(text(R.string.player_name)).setView(input)
+                .setPositiveButton(text(R.string.ok), (d,w) -> { result[0]=input.getText().toString(); wait.countDown(); })
+                .setNegativeButton(text(R.string.cancel), (d,w) -> wait.countDown()).setOnCancelListener(d -> wait.countDown()).show();
             input.requestFocus();
             input.postDelayed(() -> ((android.view.inputmethod.InputMethodManager)getSystemService(INPUT_METHOD_SERVICE))
                 .showSoftInput(input, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT),200);

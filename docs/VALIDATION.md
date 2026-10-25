@@ -1,6 +1,16 @@
 # Validation and device tests
 
-## What was actually checked
+## Version 1.3 interface update
+
+The 1.3 update changes Java touch input and Android language resources only. Native engine and save code match 1.2; engine replay tests were not rerun for this interface-only change.
+
+45 automated checks passed on the same physical Huawei P9 lite configuration below. They cover the original HUD behavior plus neutral button gaps, movement-finger ownership, dead zones, joystick axis hysteresis and deliberate turns, floating origins, swipe locking, split-axis priority/release, action on either side, mirrored controls, language resources, and controller pause/menu behavior.
+
+First-launch language selection, remembered English after a cold restart, original continuation resume, and English touch settings were exercised on the phone. Language changes are handled without Activity recreation. Old continuation data was fingerprinted privately before/after the UI tests to check it was not overwritten; no raw save or identifier is published.
+
+The default buttons do not guarantee one tile per tap. Automated event checks establish input behavior, not subjective comfort for every player or device. See [TOUCH-CONTROLS.md](TOUCH-CONTROLS.md).
+
+## Historical 1.2 validation
 
 The physical test device was a **Huawei P9 lite / VNS-L21 running LineageOS, Android 10 (API 29)**. That is the device configuration tested, not an assertion that Huawei shipped Android 10 for this phone. Only this phone was used for Android port testing.
 
@@ -32,7 +42,7 @@ adb -s DEVICE_ID shell am instrument -w pl.offline.supaplex.test/pl.offline.supa
 
 Save any live play first: `force-stop` closes the app without making a save. The test injects input, opens menus, and changes transient HUD state. Use a test installation rather than an important unsaved run. Installing these APKs requires the same signing key as any existing installation.
 
-A successful run prints 12 `PASS` lines and `HUD checks complete`. Building the test APK alone does not run these tests, and the optional GitHub Actions template does not run physical-device tests.
+A successful 1.3 run prints 45 `PASS` lines and `HUD checks complete`. Building the test APK alone does not run these tests, and the optional GitHub Actions template does not run physical-device tests.
 
 ## Repeat a continuation check
 

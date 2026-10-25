@@ -29,21 +29,106 @@ public class HudInstrumentation extends Instrumentation {
         MotionEvent e=MotionEvent.obtain(down,SystemClock.uptimeMillis(),action,ids.length,props,coords,0,0,1,1,0,0,InputDevice.SOURCE_TOUCHSCREEN,0);
         sendPointerSync(e);e.recycle();waitForIdleSync();SystemClock.sleep(35);
     }
+    private void single(int action,float x,float y) { event(action,new float[]{x},new float[]{y},new int[]{0}); }
+    private void mode(TouchControls controls,int style,float stability) {
+        runOnMainSync(() -> controls.configureInput(style,.20f,stability));
+    }
+    private void checkDirection(int key,String name) throws Exception {
+        HashSet<Integer> keys=held();
+        boolean valid=key==0?keys.isEmpty():keys.size()==1 && keys.contains(key);
+        if(!valid)throw new AssertionError(name+"; held="+keys);
+        check(true,name);
+    }
+    private boolean clickVisible(String text) {
+        android.view.accessibility.AccessibilityNodeInfo root=getUiAutomation().getRootInActiveWindow();
+        if(root==null)return false;
+        for(android.view.accessibility.AccessibilityNodeInfo node:root.findAccessibilityNodeInfosByText(text))
+            if(node.isClickable() && node.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK))return true;
+        return false;
+    }
+    private void newInputChecks(TouchControls controls,float y) throws Exception {
+        mode(controls,TouchControls.BUTTONS,.6f);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);checkDirection(0,"button centre is neutral");
+        single(MotionEvent.ACTION_MOVE,136,y-35);checkDirection(0,"button diagonal gap is neutral");
+        single(MotionEvent.ACTION_MOVE,101,y-50);checkDirection(KeyEvent.KEYCODE_DPAD_UP,"separate up button");
+        single(MotionEvent.ACTION_CANCEL,101,y-50);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,151,y);
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{151,101},new float[]{y,y-50},new int[]{0,1});
+        checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"second movement finger cannot override direction");
+        event(MotionEvent.ACTION_POINTER_UP,new float[]{151,101},new float[]{y,y-50},new int[]{0,1});
+        checkDirection(0,"movement owner release does not transfer to ignored finger");single(MotionEvent.ACTION_CANCEL,101,y);
+        mode(controls,TouchControls.FIXED,.6f);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);single(MotionEvent.ACTION_MOVE,111,y);
+        checkDirection(0,"fixed joystick dead zone");
+        single(MotionEvent.ACTION_MOVE,151,y);checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"fixed joystick right");
+        single(MotionEvent.ACTION_MOVE,151,y-53);checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"diagonal jitter keeps previous axis");
+        single(MotionEvent.ACTION_MOVE,116,y-60);checkDirection(KeyEvent.KEYCODE_DPAD_UP,"deliberate turn changes axis");
+        single(MotionEvent.ACTION_MOVE,101,y);checkDirection(0,"centre stops joystick immediately");
+        single(MotionEvent.ACTION_MOVE,51,y);checkDirection(KeyEvent.KEYCODE_DPAD_LEFT,"joystick reverses direction");
+        single(MotionEvent.ACTION_UP,51,y);checkDirection(0,"lifting stops joystick immediately");
+        mode(controls,TouchControls.FIXED,0);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,151,y);single(MotionEvent.ACTION_MOVE,151,y-53);
+        checkDirection(KeyEvent.KEYCODE_DPAD_UP,"zero stability allows immediate axis change");single(MotionEvent.ACTION_CANCEL,151,y-53);
+        mode(controls,TouchControls.FLOATING,.6f);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,151,y);checkDirection(0,"floating joystick anchors under initial touch");
+        single(MotionEvent.ACTION_MOVE,191,y);checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"floating joystick uses touch-relative motion");
+        single(MotionEvent.ACTION_MOVE,151,y);checkDirection(0,"floating joystick returns to its own centre");single(MotionEvent.ACTION_CANCEL,151,y);
+        mode(controls,TouchControls.SWIPE,.6f);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);single(MotionEvent.ACTION_MOVE,151,y);
+        checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"swipe chooses direction");
+        single(MotionEvent.ACTION_MOVE,101,y-60);checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"swipe locks direction against thumb drift");
+        single(MotionEvent.ACTION_MOVE,101,y);checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"swipe hold remains locked at origin");
+        single(MotionEvent.ACTION_UP,101,y);checkDirection(0,"swipe release stops input");
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);single(MotionEvent.ACTION_MOVE,101,y-50);
+        checkDirection(KeyEvent.KEYCODE_DPAD_UP,"next swipe can choose another direction");single(MotionEvent.ACTION_CANCEL,101,y-50);
+        mode(controls,TouchControls.SPLIT,.45f);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,101,y);checkDirection(0,"split vertical centre is neutral");
+        single(MotionEvent.ACTION_MOVE,101,y-50);checkDirection(KeyEvent.KEYCODE_DPAD_UP,"split left side controls up");
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{101,w-51},new float[]{y-50,y},new int[]{0,1});
+        checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"split most recent axis wins without a diagonal");
+        event(MotionEvent.ACTION_POINTER_UP | (1<<8),new float[]{101,w-51},new float[]{y-50,y},new int[]{0,1});
+        checkDirection(KeyEvent.KEYCODE_DPAD_UP,"split release returns to other held direction");
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{101,w-79},new float[]{y-50,y-135},new int[]{0,1});
+        check(held().contains(KeyEvent.KEYCODE_DPAD_UP)&&held().contains(KeyEvent.KEYCODE_SPACE),"split vertical plus right-side action with two fingers");
+        event(MotionEvent.ACTION_CANCEL,new float[]{101,w-79},new float[]{y-50,y-135},new int[]{0,1});SystemClock.sleep(90);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,79,y-135);
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{79,w-151},new float[]{y-135,y},new int[]{0,1});
+        check(held().contains(KeyEvent.KEYCODE_DPAD_LEFT)&&held().contains(KeyEvent.KEYCODE_SPACE),"split horizontal plus left-side action with two fingers");
+        event(MotionEvent.ACTION_CANCEL,new float[]{79,w-151},new float[]{y-135,y},new int[]{0,1});SystemClock.sleep(90);checkDirection(0,"split cancel releases direction and action");
+        runOnMainSync(() -> controls.configure(1,.64f,true));
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,w-101,y-50);
+        checkDirection(KeyEvent.KEYCODE_DPAD_UP,"left-handed split mirrors vertical side");
+        single(MotionEvent.ACTION_MOVE,w-101,y+50);checkDirection(KeyEvent.KEYCODE_DPAD_DOWN,"split vertical side controls down");
+        single(MotionEvent.ACTION_CANCEL,w-101,y+50);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,51,y);checkDirection(KeyEvent.KEYCODE_DPAD_LEFT,"left-handed split mirrors horizontal side");
+        single(MotionEvent.ACTION_CANCEL,51,y);
+        runOnMainSync(() -> controls.configure(1,.64f,false));
+        mode(controls,TouchControls.BUTTONS,.45f);
+        Method language=GameActivity.class.getDeclaredMethod("applyLanguage",String.class);language.setAccessible(true);
+        runOnMainSync(() -> {try{language.invoke(activity,"en");}catch(Exception e){throw new RuntimeException(e);}});
+        check(activity.text(R.string.save_exit).equals("Save and quit"),"English UI resource override");
+        runOnMainSync(() -> {try{language.invoke(activity,"pl");}catch(Exception e){throw new RuntimeException(e);}});
+        check(activity.text(R.string.save_exit).equals("Zapisz i zakończ"),"Polish UI resource override");
+        String chosen=((android.content.SharedPreferences)field("prefs")).getString("language","en");
+        runOnMainSync(() -> {try{language.invoke(activity,chosen);}catch(Exception e){throw new RuntimeException(e);}});
+    }
     @Override public void onStart() {
         Bundle out=new Bundle();
+        int resultCode=Activity.RESULT_OK;
+        android.content.SharedPreferences settings=getTargetContext().getSharedPreferences("touch-controls",Context.MODE_PRIVATE);
+        Map<String,?> originalSettings=new HashMap<>(settings.getAll());
         try {
             Intent intent=new Intent(getTargetContext(),GameActivity.class);intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity=(GameActivity)startActivitySync(intent);waitForIdleSync();SystemClock.sleep(700);
-            android.view.accessibility.AccessibilityNodeInfo root=null;
-            for(int attempt=0;attempt<30 && root==null;attempt++) {
-                root=getUiAutomation().getRootInActiveWindow();
-                if(root==null)SystemClock.sleep(100);
+            for(int attempt=0;attempt<30;attempt++) {
+                clickVisible("English");
+                if(clickVisible("GAME MENU") || clickVisible("MENU GRY"))break;
+                SystemClock.sleep(100);
             }
-            if(root!=null) for (android.view.accessibility.AccessibilityNodeInfo node : root.findAccessibilityNodeInfosByText("MENU GRY"))
-                node.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK);
             SystemClock.sleep(700);waitForIdleSync();
             TouchControls controls=(TouchControls)field("controls");
             runOnMainSync(() -> controls.configure(1,.64f,false));
+            mode(controls,TouchControls.BUTTONS,.45f);
             w=controls.getWidth();h=controls.getHeight();unit=Math.min(w/960f,h/540f);w/=unit;h/=unit;
             Field surfaceField=Class.forName("org.libsdl.app.SDLActivity").getDeclaredField("mSurface");surfaceField.setAccessible(true);
             View surface=(View)surfaceField.get(null);
@@ -64,6 +149,7 @@ public class HudInstrumentation extends Instrumentation {
             check(held().contains(KeyEvent.KEYCODE_DPAD_LEFT),"left-handed D-pad");
             event(MotionEvent.ACTION_CANCEL,new float[]{w-151},new float[]{y},new int[]{0});
             runOnMainSync(() -> controls.configure(1,.64f,false));
+            newInputChecks(controls,y);
             runOnMainSync(() -> activity.showOptions());SystemClock.sleep(100);
             check(((AlertDialog)field("options")).isShowing(),"settings dialog opens");
             runOnMainSync(() -> ((AlertDialog)getFieldUnchecked("options")).dismiss());SystemClock.sleep(100);
@@ -81,8 +167,21 @@ public class HudInstrumentation extends Instrumentation {
             check(((AlertDialog)field("options")).isShowing(),"controller START opens pause and save");
             runOnMainSync(() -> ((AlertDialog)getFieldUnchecked("options")).dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_BUTTON_START)));
             check(!((AlertDialog)field("options")).isShowing(),"controller START returns from pause");
-            out.putString("stream",results.toString()+"HUD checks complete\n");finish(Activity.RESULT_OK,out);
-        } catch(Throwable error) {out.putString("stream",results.toString()+"FAIL "+error.toString()+"\n");finish(Activity.RESULT_CANCELED,out);}
+            out.putString("stream",results.toString()+"HUD checks complete\n");
+        } catch(Throwable error) {out.putString("stream",results.toString()+"FAIL "+error.toString()+"\n");resultCode=Activity.RESULT_CANCELED;}
+        finally {
+            android.content.SharedPreferences.Editor editor=settings.edit().clear();
+            for(Map.Entry<String,?> item:originalSettings.entrySet()) {
+                Object value=item.getValue();String key=item.getKey();
+                if(value instanceof String)editor.putString(key,(String)value);
+                else if(value instanceof Float)editor.putFloat(key,(Float)value);
+                else if(value instanceof Boolean)editor.putBoolean(key,(Boolean)value);
+                else if(value instanceof Integer)editor.putInt(key,(Integer)value);
+                else if(value instanceof Long)editor.putLong(key,(Long)value);
+            }
+            editor.commit();
+        }
+        finish(resultCode,out);
     }
     private Object getFieldUnchecked(String name) {try{return field(name);}catch(Exception e){throw new RuntimeException(e);}}
 }

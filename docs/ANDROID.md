@@ -1,36 +1,40 @@
 # Android play guide
 
-Start with the [installation instructions](../README.md#install-and-start-playing). This guide refers to version 1.2. Its Android dialogs are Polish; the table gives their English meanings.
+Start with the [installation instructions](../README.md#install-and-start-playing). This guide refers to version 1.3. On first launch, choose Polski or English. The choice is remembered and can be changed through Pause → Language / Język without restarting gameplay. Original DOS menus remain English. The table below pairs the Polish labels with their English meanings.
 
 ## Pause menu labels
 
 Open the menu with pause at the top right, the three dots at the top left, or START on a gamepad. Gameplay and its timer stop while the menu is open. Scroll inside the menu to reach the lower settings.
 
-| Label in the APK | Meaning |
-| --- | --- |
-| Pauza i zapis gry | Pause and save game |
-| Zapisz postęp poziomu | Save the current level progress; keep the game open |
-| Zapisz i zakończ | Save the current level progress and close the game |
-| Wznów zapisany poziom | Load the last manual save; its date and time are shown |
-| Wstecz | Send Escape to the original game; this can leave the level |
-| Wróć do gry | Close the menu and continue playing |
-| Ukryj przyciski dotykowe | Hide touch controls |
-| Rozmiar sterowania | Touch-control size |
-| Widoczność przycisków | Touch-control opacity |
-| Układ dla leworęcznych | Left-handed layout |
-| Zachowaj proporcje obrazu | Preserve original picture proportions |
-| Ukrywaj dotyk po użyciu pada | Hide touch controls after controller input |
-| Tak / Y; Nie / N | Answer Yes or No to a prompt in the original game |
+| English button label | Polish button label | Purpose |
+| --- | --- | --- |
+| Pause and save | Pauza i zapis gry | Pause menu title |
+| Save level progress | Zapisz postęp poziomu | Save and keep the app open |
+| Save and quit | Zapisz i zakończ | Save and close the app |
+| Resume saved level | Wznów zapisany poziom | Load the manual save, identified by its date/time |
+| Back / leave level | Wstecz / opuść poziom | Send Escape to the original game; may leave the level |
+| Return to game | Wróć do gry | Close the pause menu and continue |
+| Hide touch controls | Ukryj przyciski dotykowe | Switch to the minimal touch HUD |
+| Touch controls | Sterowanie dotykowe | Open movement styles and touch settings |
+| Language / Język | Język / Language | Choose Android UI language |
+| Control size | Rozmiar sterowania | Resize controls |
+| Button opacity | Widoczność przycisków | Change visibility |
+| Left-handed layout | Układ dla leworęcznych | Mirror controls |
+| Preserve picture proportions | Zachowaj proporcje obrazu | Keep original aspect ratio |
+| Hide touch after gamepad input | Ukrywaj dotyk po użyciu pada | Automatically switch HUD |
+| Yes / Y; No / N | Tak / Y; Nie / N | Answer original-game prompts |
 
-**Wstecz is not the resume button.** Choose **Wróć do gry** to close the pause menu safely.
+**Back / leave level (Wstecz / opuść poziom) is not the resume button.** Choose **Wróć do gry** to close the pause menu safely.
+
+For movement styles and the split layout, see [TOUCH-CONTROLS.md](TOUCH-CONTROLS.md). Size, opacity, left-handed layout, auto-hide, dead zone, and stability are on that separate settings page.
 
 ## Saving and resuming
 
-Save during a live level with **Zapisz i zakończ**. After opening the app again, choose **Wznów** at the startup question. **Menu gry** opens the original menu instead; it does not delete the save.
+Save during a live level with **Save and quit / Zapisz i zakończ**. After opening the app again, choose **Resume / Wznów** at the startup question. **Game menu / Menu gry** opens the original menu instead; it does not delete the save.
 
-**Zapisz postęp poziomu** writes the same slot without closing the app. The menu remains open, so the game stays paused. Close it with **Wróć do gry** to continue. If the resume button was disabled before your first save, reopen the menu to refresh it.
+**Save level progress / Zapisz postęp poziomu** writes the same slot without closing the app. The menu remains open, so the game stays paused. Close it with **Return to game / Wróć do gry** to continue. If the resume button was disabled before your first save, reopen the menu to refresh it.
 
-Loading with **Wznów zapisany poziom** during a live game asks for confirmation: **Wczytaj** means Load, **Anuluj** means Cancel. Loading replaces changes made since your last save. The slot is shared by all players and levels, so saving a different run overwrites it.
+Loading with **Resume saved level / Wznów zapisany poziom** during a live game asks for confirmation: choose **Load / Wczytaj** to confirm or **Cancel / Anuluj** to keep playing. Loading replaces changes made since your last save. The slot is shared by all players and levels, so saving a different run overwrites it.
 
 This is a manual continuation, not autosave or cloud sync. The state includes the board and objects, Murphy's position and animation state, items, time, random state, level, and player. It uses `CONTINUE.SAV` in the app's private data, separate from upstream's debug `SAVEGAME.SAV`. Loading a continuation does not itself set the cheating flag; a run already marked as cheating keeps that status.
 
@@ -61,7 +65,7 @@ Touch controls hide after gamepad input when that option is enabled. A small but
 
 Updating the same package (`pl.offline.supaplex`) with the **same signing key** preserves private save data and settings. Uninstalling or using Android's **Clear storage / Clear data** removes them. There is no in-app export or cloud backup feature.
 
-The downloadable 1.2 APK uses an Android debug key. A build made on another computer normally has a different key even if the package name matches. Android may reject that update with a signature mismatch. Keep the existing installation and its data; do not uninstall unless you accept losing that data. Developers should use a stable private release key for future distribution and never commit it.
+The downloadable 1.2 and 1.3 APKs use the same Android debug key, so 1.3 can update 1.2 without clearing saves. A build made on another computer normally has a different key even if the package name matches. Android may reject that update with a signature mismatch. Keep the existing installation and its data; do not uninstall unless you accept losing that data. Developers should use a stable private release key for future distribution and never commit it.
 
 Returning through the launcher after HOME is different from a persistent save: Android can terminate an app in the background. Make a manual save before relying on a later return.
 
@@ -69,7 +73,7 @@ Returning through the launcher after HOME is different from a persistent save: A
 
 - **Save buttons disabled:** start a live level. Menus, demos, and death/end sequences cannot be saved.
 - **No resume prompt:** no manual continuation was found. Check that saving succeeded and app data was not cleared.
-- **Stretched picture:** enable **Zachowaj proporcje obrazu** in the pause menu.
+- **Stretched picture:** enable **Preserve picture proportions / Zachowaj proporcje obrazu** in the pause menu.
 - **Controller letters differ:** test logical positions; report the model, Android version, and working controls. Do not post Bluetooth addresses or serial numbers.
 - **Install/update fails:** check the Android version, storage, and signing-key explanation before removing anything.
 

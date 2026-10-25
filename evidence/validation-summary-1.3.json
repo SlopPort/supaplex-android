@@ -1,0 +1,43 @@
+{
+  "version": "1.3",
+  "device": {
+    "model": "Huawei P9 lite / VNS-L21",
+    "android": "LineageOS Android 10 / API 29"
+  },
+  "apk_sha256": "d46745fe49f2ca6de85c08f08904c633ffd1f288887d47474be06837a4c6f457",
+  "build": "assembleDebug assembleDebugAndroidTest lintDebug passed",
+  "interface_checks": {
+    "passed": 45,
+    "failed": 0
+  },
+  "localized_resources": {
+    "languages": [
+      "en",
+      "pl"
+    ],
+    "matching_keys": 54
+  },
+  "native_engine": "Unchanged from 1.2; no replay rerun for this interface-only change",
+  "limits": [
+    "Input tests do not establish subjective comfort.",
+    "No guaranteed one-tile-per-tap mode.",
+    "Only the documented physical Android configuration tested."
+  ],
+  "physical_ui_checks": {
+    "english_first_launch": true,
+    "english_cold_restart": true,
+    "existing_continuation_resumed": true,
+    "floating_live_gesture_exercised": true,
+    "split_selected_via_settings": true,
+    "polish_switch_while_paused": true,
+    "split_choice_persists": true,
+    "polish_cold_restart": true,
+    "home_return_exercised": true,
+    "existing_save_unchanged": true
+  },
+  "apk_checks": {
+    "permissions": [],
+    "same_signing_certificate_as_1_2": true,
+    "zip_alignment_16kb": true
+  }
+}
