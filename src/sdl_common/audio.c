@@ -21,8 +21,12 @@
 
 #if HAVE_SDL2
 #include <SDL.h>
-#if TARGET_OS_MAC
+#if TARGET_OS_MAC || defined(__ANDROID__)
+#ifdef __ANDROID__
+#include <SDL_mixer.h>
+#else
 #include <SDL2_mixer/SDL_mixer.h>
+#endif
 #else
 #include <SDL2/SDL_mixer.h>
 #endif

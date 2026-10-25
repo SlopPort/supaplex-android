@@ -27,6 +27,7 @@ typedef struct {
 Config *initializeConfigForWriting(const char *pathname);
 Config *initializeConfigForReading(const char *pathname);
 void destroyConfig(Config *config);
+int finishConfigWriting(Config *config);
 
 void writeConfigSection(Config *config, const char *section);
 void writeConfigInt(Config *config, const char *key, const int value);

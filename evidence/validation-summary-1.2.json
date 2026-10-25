@@ -1,0 +1,30 @@
+{
+  "version": "1.2",
+  "device": {
+    "model": "Huawei P9 lite / VNS-L21",
+    "android": "10 / API 29"
+  },
+  "apk_sha256": "05afbebd5876b1280bc3728fa87d70ad9001c872aeea2263301620451221552b",
+  "build": "assembleDebug assembleDebugAndroidTest lintDebug passed",
+  "hud_checks": {
+    "passed": 12,
+    "failed": 0
+  },
+  "engine_regressions": {
+    "passed": 14,
+    "failed": 0
+  },
+  "continuation": {
+    "failed_save_preserves_previous": true,
+    "save_exit_terminates_cleanly": true,
+    "ordinary_relaunch_restores": true,
+    "board_crc32": "a6577b61",
+    "all_logged_fields_match": true,
+    "continuation_does_not_mark_cheating": true,
+    "main_menu_resume": true,
+    "save_disabled_in_main_menu": true
+  },
+  "signature": "v1 and v2 verified (debug key)",
+  "zip_alignment": "zipalign -c -P 16 -v 4 passed",
+  "scope": "Manual single checkpoint. No autosave. Device data preserved; not tested on every Android version."
+}

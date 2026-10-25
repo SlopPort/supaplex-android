@@ -22,7 +22,7 @@
 
 static int sCurrentGameControllerIndex = -1;
 static SDL_GameController *sCurrentGameController = NULL;
-static const float kJoystickDeadzone = 0.5;
+static const float kJoystickDeadzone = 0.35;
 
 // How fast the directional pad moves the menu cursor, in the same units as the
 // analog stick: a full push of the stick is 9, so this is about half of it.
@@ -30,16 +30,20 @@ static const float kDpadMouseSpeed = 5.0;
 
 void initializeControllers(void)
 {
-    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+#ifndef HEADLESS_TEST
+    SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+#endif
 }
 
 SDL_GameController *getGameController()
 {
     // The game controller is not valid anymore, invalidate.
-    if (sCurrentGameControllerIndex != -1
-        && SDL_IsGameController(sCurrentGameControllerIndex) == 0)
+    if (sCurrentGameController != NULL
+        && !SDL_GameControllerGetAttached(sCurrentGameController))
     {
+        SDL_GameControllerClose(sCurrentGameController);
         sCurrentGameController = NULL;
+        sCurrentGameControllerIndex = -1;
     }
 
     if (sCurrentGameController != NULL)

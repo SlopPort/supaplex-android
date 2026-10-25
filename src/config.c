@@ -20,6 +20,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef __ANDROID__
+#include <unistd.h>
+#endif
 
 #include "file.h"
 #include "lib/ini/ini.h"
@@ -29,6 +32,20 @@ typedef struct {
     ini_t *iniConfig;
     FILE *file;
 } ConfigContextPriv;
+
+int finishConfigWriting(Config *config)
+{
+    ConfigContextPriv *context = (ConfigContextPriv *)config->context;
+    if (!context || !context->file) return 1;
+    FILE *file = context->file;
+    int failed = ferror(file) || fflush(file) != 0;
+#ifdef __ANDROID__
+    if (!failed && fsync(fileno(file)) != 0) failed = 1;
+#endif
+    if (fclose(file) != 0) failed = 1;
+    context->file = NULL;
+    return failed;
+}
 
 void destroyConfig(Config *config)
 {

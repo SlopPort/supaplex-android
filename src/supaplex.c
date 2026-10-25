@@ -668,6 +668,7 @@ void loc_49C2C(char text[3]);
 void showSavegameOperationError(void);
 void saveGameSnapshot(void);
 void loadGameSnapshot(void);
+void loadGameSnapshotFile(const char *filename, uint8_t continuation);
 void checkDebugKeys(void);
 void loc_4988E(void);
 void restoreOriginalFancyTiles(void);
@@ -1511,8 +1512,19 @@ void runAdvancedOptionsRootMenu()
     }
 }
 
+#if defined(__ANDROID__)
+#include <SDL.h>
+#include <unistd.h>
+#endif
+
 int main(int argc, char *argv[])
 {
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    chdir(SDL_AndroidGetInternalStoragePath());
+#endif
+#ifdef HEADLESS_TEST
+    SDL_SetMainReady();
+#endif
     parseCommandLineOptions(argc, argv);
 
     if (gFastMode == FastModeTypeUltra)
@@ -1549,7 +1561,7 @@ int main(int argc, char *argv[])
     initializeFadePalette(); // 01ED:026F
     initializeMouse();
 
-    if (gFastMode == FastModeTypeNone)
+    if (gFastMode == FastModeTypeNone && !gShouldStartFromSavedSnapshot)
     {
         setPalette(gBlackPalette);
         videoLoop();
@@ -4065,6 +4077,10 @@ void runLevel() //    proc near       ; CODE XREF: start+35Cp
     gPlantedRedDiskCountdown = 0;
     byte_5A323 = 0;
 
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    extern void androidSetLevelActive(int active);
+    androidSetLevelActive(1);
+#endif
     do
     {
         handleGameIterationStarted();
@@ -4221,6 +4237,9 @@ void runLevel() //    proc near       ; CODE XREF: start+35Cp
             break;
         }
     } while (1);
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    androidSetLevelActive(0);
+#endif
 
     // loc_48E03:              ; CODE XREF: runLevel+328j
     //                 ; runLevel+333j ...
@@ -5077,15 +5096,20 @@ void saveGameSnapshot() // loc_499C8:              ; CODE XREF: handleGameUserIn
     loc_49C2C("WR"); // Means snapshot saved with no issues
 }
 
-void loadGameSnapshot() // loc_49A89:              ; CODE XREF: handleGameUserInput+3FAj
+void loadGameSnapshot(void)
+{
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    extern int androidTakeContinuationLoad(void);
+    if (androidTakeContinuationLoad()) { loadGameSnapshotFile("CONTINUE.SAV", 1); return; }
+#endif
+    loadGameSnapshotFile(gSavegameSavFilename, 0);
+}
+
+void loadAndroidContinuation(void) { loadGameSnapshotFile("CONTINUE.SAV", 1); }
+
+void loadGameSnapshotFile(const char *filename, uint8_t continuation)
 {
     gShouldCloseAdvancedMenu = 1;
-
-    if (canLoadGameState() == 0)
-    {
-        showSavegameOperationError();
-        return;
-    }
 
     // loc_49A96:              ; CODE XREF: handleGameUserInput+536j
     if (gIsRecordingDemo != 0)
@@ -5095,12 +5119,18 @@ void loadGameSnapshot() // loc_49A89:              ; CODE XREF: handleGameUserIn
 
     gIsRecordingDemo = 0;
 
-    if (loadGameState() != 0)
+    if (loadGameStateFromFile(filename) != 0)
     {
         showSavegameOperationError();
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+        if (continuation) { extern void androidNotifyProgress(int result); androidNotifyProgress(-3); }
+#endif
         return;
     }
-
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    if (continuation) { extern void androidLogProgress(const char *operation); androidLogProgress("restored"); }
+#endif
+    if (continuation) { readPlayersLst(); readHallfameLst(); readLevelsLst(); }
     forceRestoreOriginalFancyTiles();
 
     // loc_49B84:              ; CODE XREF: handleGameUserInput+619j
@@ -5114,8 +5144,7 @@ void loadGameSnapshot() // loc_49A89:              ; CODE XREF: handleGameUserIn
     gIsFlashingBackgroundModeEnabled = 0;
     gDebugExtraRenderDelay = 1;
     replaceCurrentPaletteColor(0, (Color){0, 0, 0});
-    generateRandomSeedFromClock();
-    generateRandomNumber();
+    if (!continuation) { generateRandomSeedFromClock(); generateRandomNumber(); }
     // I commented out all these video transitions because they're not needed in the reimplementation. They were here
     // just to prevent graphical glitches. Also they made loading much slower.
     //
@@ -5128,7 +5157,7 @@ void loadGameSnapshot() // loc_49A89:              ; CODE XREF: handleGameUserIn
     gLastDrawnMinutesAndSeconds = 0xFFFF;
     gLastDrawnHours = 0xFF;
     drawGameTime();
-    gHasUserCheated = 1;
+    if (!continuation) gHasUserCheated = 1;
     gIsRecordingDemo = 0;
 
     drawTextWithChars8FontToGamePanel(304, 14, 6, "LD"); // Means snapshot was loaded successfully
@@ -5144,6 +5173,9 @@ void loadGameSnapshot() // loc_49A89:              ; CODE XREF: handleGameUserIn
     // loc_49C40:              ; CODE XREF: handleGameUserInput+6BDj
     //                     ; handleGameUserInput+6D6j
     loc_49C41();
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    if (continuation) { extern void androidNotifyProgress(int result); androidNotifyProgress(3); }
+#endif
 }
 
 void showSavegameOperationError() // loc_49C28:              ; CODE XREF: handleGameUserInput+47Aj

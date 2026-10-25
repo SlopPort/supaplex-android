@@ -1,0 +1,7 @@
+{
+  ".": "2ae9e5815c508c15e405892db486495d28f74f6d",
+  "vendor/SDL": "8acf7cfc0f88717e5c036f60f0314bfcafe39189",
+  "vendor/SDL_mixer": "556de667736eac58815acba8175a493963801b6b",
+  "vendor/SDL_mixer/external/libxmp": "3a1c88f3bb4d1ac1f5bbba4963e9109c056d2a39",
+  "tools/rea-source": "397aa62f2e203bc0f8350634752af0339048e81e"
+}

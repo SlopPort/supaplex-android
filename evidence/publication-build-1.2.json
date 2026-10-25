@@ -1,0 +1,13 @@
+{
+  "result": "BUILD SUCCESSFUL",
+  "source": "Clean publication checkout with pinned dependencies",
+  "command": "android/gradlew.bat -p android --offline --no-daemon assembleDebug assembleDebugAndroidTest lintDebug",
+  "host": "Windows",
+  "jdk": "21",
+  "elapsed": "5m 1s",
+  "tasks": {
+    "executed": 75,
+    "total": 75
+  },
+  "note": "Local SDK paths and raw build logs are not published. This is a clean source build, not a claim of bit-for-bit APK reproducibility."
+}

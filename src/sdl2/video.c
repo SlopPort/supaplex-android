@@ -42,6 +42,9 @@ SDL_Surface *gScreenSurface = NULL;
 uint8_t *gScreenPixels = NULL;
 SDL_Window *gWindow = NULL;
 SDL_Rect gWindowViewport;
+#ifdef __ANDROID__
+static SDL_atomic_t sViewportDirty = { 0 };
+#endif
 SDL_Renderer *gRenderer = NULL;
 SDL_Texture *gTexture = NULL;
 SDL_Surface *gTextureSurface = NULL;
@@ -59,12 +62,16 @@ void initializeVideo(uint8_t fastMode)
         exit(1);
     }
 
+#ifdef __ANDROID__
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+#endif
     gWindow = SDL_CreateWindow("OpenSupaplex",
                                SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED,
                                kWindowWidth,
                                kWindowHeight,
-#if defined(__SWITCH__) || defined(__vita__) || defined(__PSP__) || defined(__PSL1GHT__) || defined(__WIIU__) || defined(__PS2__)
+#if defined(__ANDROID__) || defined(__SWITCH__) || defined(__vita__) || defined(__PSP__) || defined(__PSL1GHT__) || defined(__WIIU__) || defined(__PS2__)
                                SDL_WINDOW_FULLSCREEN);
 #else
                                0);
@@ -92,6 +99,10 @@ void initializeVideo(uint8_t fastMode)
     }
 
     gRenderer = SDL_CreateRenderer(gWindow, -1, rendererFlags);
+#ifdef __ANDROID__
+    if (gRenderer == NULL)
+        gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_SOFTWARE);
+#endif
 
     if (gRenderer == NULL)
     {
@@ -160,6 +171,9 @@ void render()
         return;
     }
 
+#ifdef __ANDROID__
+    if (SDL_AtomicCAS(&sViewportDirty, 1, 0)) updateWindowViewport();
+#endif
     SDL_BlitSurface(gScreenSurface, NULL, gTextureSurface, NULL);
 
     SDL_UpdateTexture(gTexture, NULL, gTextureSurface->pixels, gTextureSurface->pitch);
@@ -227,6 +241,13 @@ void centerMouse()
 
 void moveMouse(int x, int y)
 {
+#ifdef __ANDROID__
+    int w, h, rw, rh;
+    SDL_GetWindowSize(gWindow, &w, &h);
+    SDL_GetRendererOutputSize(gRenderer, &rw, &rh);
+    x = (gWindowViewport.x + (float)x / w * gWindowViewport.w) * w / rw;
+    y = (gWindowViewport.y + (float)y / h * gWindowViewport.h) * h / rh;
+#endif
     SDL_WarpMouseInWindow(gWindow, x, y);
 }
 
@@ -240,6 +261,15 @@ void getMouseState(int *x, int *y, uint8_t *leftButton, uint8_t *rightButton)
     Uint32 state = SDL_GetMouseState(x, y);
     *leftButton = (state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
     *rightButton = (state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
+#ifdef __ANDROID__
+    int w, h, rw, rh;
+    SDL_GetWindowSize(gWindow, &w, &h);
+    SDL_GetRendererOutputSize(gRenderer, &rw, &rh);
+    if (gWindowViewport.w > 0 && gWindowViewport.h > 0) {
+        *x = ((float)*x * rw / w - gWindowViewport.x) * w / gWindowViewport.w;
+        *y = ((float)*y * rh / h - gWindowViewport.y) * h / gWindowViewport.h;
+    }
+#endif
 }
 
 void toggleFullscreen()
@@ -273,9 +303,15 @@ int windowResizingEventWatcher(void* data, SDL_Event* event)
     if (event->type == SDL_WINDOWEVENT
         && event->window.event == SDL_WINDOWEVENT_RESIZED)
     {
+#ifdef __ANDROID__
+        // Android emits resize events on its UI thread. EGL rendering must
+        // stay on SDLThread, including resize and foreground transitions.
+        SDL_AtomicSet(&sViewportDirty, 1);
+#else
         updateWindowViewport();
         render();
         present();
+#endif
     }
 
     return 0;

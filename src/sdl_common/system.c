@@ -132,15 +132,19 @@ void int8handler() // proc far        ; DATA XREF: setint8+10o
     }
 }
 
+static uint8_t sResetClockAfterOverlay = 0;
+
 void emulateClock()
 {
     static Uint32 sLastTickCount = 0;
     static Uint32 sRemainingTicks = 0;
     static const Uint32 sClockInterval = 20; // 20 ms is what the original game seemed to use
 
-    if (sLastTickCount == 0)
+    if (sLastTickCount == 0 || sResetClockAfterOverlay)
     {
         sLastTickCount = getTime();
+        sRemainingTicks = 0;
+        sResetClockAfterOverlay = 0;
         return;
     }
 
@@ -160,14 +164,32 @@ void handleSystemEvents()
     if (gFastMode != FastModeTypeUltra)
     {
         SDL_Event event;
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+        extern int androidOverlayIsPaused(void);
+        extern void androidApplyDisplaySettings(void);
+        do {
+        androidApplyDisplaySettings();
+        extern void androidProcessProgress(void);
+        androidProcessProgress();
+#endif
         while (SDL_PollEvent(&event))
         {
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+            extern void androidRememberTouch(const SDL_Event *event);
+            androidRememberTouch(&event);
+            if (event.type == SDL_APP_DIDENTERFOREGROUND || event.type == SDL_APP_DIDENTERBACKGROUND)
+                sResetClockAfterOverlay = 1;
+#endif
             if (event.type == SDL_QUIT)
             {
                 gShouldExitLevel = 1;
                 gShouldExitGame = 1;
             }
         }
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+        if (androidOverlayIsPaused()) { sResetClockAfterOverlay = 1; SDL_Delay(10); }
+        } while (androidOverlayIsPaused() && !gShouldExitGame);
+#endif
     }
 
     emulateClock();

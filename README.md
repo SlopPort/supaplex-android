@@ -1,107 +1,74 @@
-# OpenSupaplex
+# Supaplex Offline for Android
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![Run OpenSupaplex Tests](https://github.com/sergiou87/open-supaplex/workflows/Run%20OpenSupaplex%20Tests/badge.svg)
+A native Android port of [OpenSupaplex](https://github.com/sergiou87/open-supaplex), with the original Supaplex graphics and levels, touch controls, gamepad support, and a manual save that lets you continue partway through a level.
 
-[Supaplex](https://en.wikipedia.org/wiki/Supaplex) is a game made in the early nineties.
+No ads, purchases, accounts, telemetry, or network permission. The game runs offline after installation.
 
-![image](https://github.com/sergiou87/open-supaplex/raw/master/switch/resources/screenshots/OpenSupaplex-5.png)
+**Current version: 1.2.** The Android dialogs in this APK are **in Polish**; the original game menus are in English. This documentation explains the Polish buttons. An English app translation is not included yet.
 
-Since then the source code has been lost. Some enthusiasts have disassembled the game,
-fixed many bugs, and added many features. Today the game and the so-called speed fix can
-be downloaded free from [here](http://www.elmerproductions.com/sp/dlinst.html). The source code for the speed fix is likewise, unavailable.
+## Install and start playing
 
-**OpenSupaplex** is a 1:1 reimplementation of the original game in C and SDL, with just a few changes to make it easy to use with game controllers, and also easy to port to any platform.
+1. Open [Releases](https://github.com/SlopPort/supaplex-android/releases) and download `Supaplex-Offline-1.2.apk` from the **Assets** section. You do not need the source ZIP to play.
+2. Open the APK on your phone. If Android asks, allow that browser or file manager to install this app. You can turn that permission off afterward.
+3. Open **Supaplex Offline** from the launcher. Skip the opening screens with the check-mark button if needed.
+4. In the original game menu, use **NEW PLAYER** to create a player. The Android name dialog is titled **Imię gracza** (player name). Enter a name, confirm with **OK**, then select a level and press the check-mark button to start.
 
-## Getting Started
+The APK is a test build signed with an Android debug key. See [updating without losing saves](docs/ANDROID.md#updates-and-save-data) before replacing an existing installation. Android 5.0 or later and OpenGL ES 2.0 are required by the configuration; this is not a promise that every device works.
 
-If you want to build the original game from its disassembled source code, please refer to
-the instructions in [cilliemalan's repo](https://github.com/cilliemalan/supaplex).
+## Controls
 
-Other than that, **OpenSupaplex** can be built for any of the following platforms:
-- macOS
-- Windows
-- Linux
-- PSP
-- PS Vita
-- PlayStation 2
-- PlayStation 3
-- Nintendo DS
-- Nintendo 3DS
-- Nintendo Wii
-- Nintendo Wii U
-- Nintendo Switch
-- RISC OS
+| On screen | Action |
+| --- | --- |
+| Direction pad, bottom left | Move Murphy. Slide between directions without lifting your finger. |
+| Large lightning button | Action. Hold it with a direction to collect beside Murphy without moving; hold it to place a red disk when available. |
+| Check-mark button | Confirm / Enter. |
+| Pause, top right | Pause and open save options. |
+| Three dots, top left | Open the same menu, including touch and display settings. |
 
-More platforms (like Android, iOS and tvOS) to come Soon™.
+The picture fills the screen by default, stretching its proportions. Enable **Zachowaj proporcje obrazu** (preserve aspect ratio) in the pause menu for the original proportions. Button size, opacity, and a left-handed layout are adjustable there too; scroll down to see them.
 
-### Prerequisites
-Depending on the platform, you need to install a different toolchain to build the game for that platform.
-You will also need to install the libraries needed to make it work. Those are basically SDL and SDL_mixer,
-and their dependencies. All ports use SDL 2, except for PSP, Nintendo DS, Nintendo 3DS, Nintendo Wii and
-RISC OS, which use SDL 1.2.
+For a gamepad, use the D-pad or left stick to move, **X** for action, **A** to confirm, and **START** to open or close the pause menu. **HOME** goes to Android's home screen. Button letters describe Android/SDL positions; Nintendo controllers can have different printed letters. See the [full controller guide](docs/ANDROID.md#gamepads).
 
-All platforms supported are built from CI using [GitHub Actions](https://github.com/sergiou87/open-supaplex/actions). You can check [those workflows](https://github.com/sergiou87/open-supaplex/tree/master/.github/workflows)
-and the CI scripts used in them for more info about how to prepare the dev environment.
+## Save halfway through a level
 
-### Building
-Once the development environment is set up, building the game is usually as easy as:
-```
-$ make
-```
+1. Press pause on screen or **START** on the gamepad.
+2. Choose **Zapisz i zakończ** (**Save and quit**).
+3. Next time you open the game, choose **Wznów** (**Resume**).
 
-On macOS, just opening the Xcode project and running it is enough.
+Your board, Murphy's position, collected items, level, player, and elapsed time are restored. To save while keeping the game open, choose **Zapisz postęp poziomu** (**Save level progress**). To load from the pause menu, choose **Wznów zapisany poziom** (**Resume saved level**).
 
-## Contributing
+There is **one manual save slot for the whole app**, shared across players and levels. Each successful save replaces it. **There is no autosave.** Uninstalling the app or clearing its data deletes the save. Saving is available during a live level, not in the original menu, a demo, or the death/end sequence.
 
-If you like this project, there are several ways you can contribute to it:
-- **Reporting bugs:** just file an issue in this repo, detailing the bug and how to reproduce it as much as you can.
-It's even better if you can record a demo of the bug using the demo feature of the game and upload the file.
-- **Requesting features or ports**: again, filing an issue in this repo is the way to go, detailing what you need as much as you can.
-- **Submitting Pull Requests:** you can also contribute with your own code. Just, please, be mindful of the code style and project structure used
-already.
+## What this fork adds
 
-### Contributing with new features
+OpenSupaplex supplies the engine, original presentation, controller foundations, and snapshot format. This fork adds Android packaging and an Android interface around that engine:
 
-New features are more than welcome. However, the main goal of **OpenSupaplex** is having a 1:1 clone of the
-original Supaplex game, in every possible aspect, and only making exceptions wherever is reasonable to do so.
+- A configurable touch overlay with simultaneous direction and action input.
+- Full-screen display, optional original proportions, and controller/touch switching.
+- A pause menu and a persistent continuation slot, separate from upstream's debug snapshot slot. Loading this continuation does not itself mark a run as cheating.
+- Android keyboard entry for player names and handling for HOME/resume.
+- One APK containing ARMv7, ARM64, x86, and x86_64 libraries, configured for 16 KB memory-page alignment.
 
-**New features must NOT change how the game works or looks in a way that CANNOT be avoided.** For those kind of
-features, adding some kind of setting so users can opt-in is the way to go.
+The [repository comparison](docs/COMPARISON.md) explains what was checked and what is inherited. This is an Android adaptation, not a claim to have invented Supaplex saving or gamepad controls. It aims to preserve OpenSupaplex/SpeedFix behavior; complete equivalence to every historical DOS version has not been established.
 
-### Contributing with ports to new platforms
+## Build from source
 
-The whole reason for **OpenSupaplex** to exist is to make the experience of the original game available natively to as many platforms
-as possible. If you want to bring **OpenSupaplex** to a new platform, please go for it!
+Playing does not require Android Studio. Developers can follow the [build instructions](docs/BUILDING.md) for SDK versions, dependency setup, and commands. A normal GitHub source ZIP does not contain submodule sources; use the documented Git clone procedure or the bundled source archive attached to the release.
 
-But please be mindful of how ports are structured already in the repo:
-- Create a subfolder in the root of the repo with the (lowercase) name that represents the new platform.
-That folder should contain everything needed to build and bundle the game for distribution.
-- If needed, inside the `src` folder you can create also a folder with the (lowercase) name of the platform
-and add specific implementation files there.
-- If you can, avoid plaguing the code with `#if` statements for the new platform.
-- If you find a bug that only happens in the new platform, and presumably is a bug in either SDL,
-SDL_mixer or any of their dependencies, please, fix the root of the problem and don't write workarounds
-in the game's codebase. Not only you won't pollute **OpenSupaplex** with hacks that belong elsewhere,
-but you will also be contributing and helping people using SDL and SDL_mixer in that platform.
-I [have](https://github.com/libsdl-org/SDL_mixer/commit/fb3af0e06e2d27e699ac6102ce5917ef91622e1f) [done](https://github.com/devkitPro/SDL-mirror/pull/59) [that](https://github.com/ps3dev/PSL1GHT/pull/71) [many](https://github.com/ps3dev/ps3libraries/pull/37) [many](https://github.com/rsn8887/SDL-Vita/pull/8) [times](https://github.com/devkitPro/SDL-mirror/pull/57) while working on the different ports, and it's a great experience.
-- It'd be very helpful if you also got some CI scripts to allow me building the new port from the GitHub Actions.
+## Testing and limitations
 
-### Contributing with feedback
+Physical-device testing used a **Huawei P9 lite (VNS-L21), running LineageOS / Android 10, API 29**, not the phone's original Huawei firmware.
 
-I'm also very open to suggestions about how to make things better. **Constructive** feedback on my code, how to structure the project
-to make it easier to handle all the ports… just file an issue and we can discuss it there.
+- Version 1.2: 12 touch/controller-interface checks and 14 engine regression replays passed.
+- Continuation tests verified the board checksum, position, level, player, time, and frame counter after saving and reopening, plus resume from the original menu and preservation of the previous save when a new save fails.
+- Earlier port validation replayed 334 solutions of the original levels on the same device. That full set was not rerun for 1.2.
 
-### Hint for packagers for Linux distros
+See [validation notes](docs/VALIDATION.md). Other Android versions, phones, and all controller models have not been physically tested. The save slot is manual. The APK is not a Play Store release.
 
-By default OpenSupaplex on Linux reads and writes files in current working directory. To make it more package-friendly, provide the following in CFLAGS: `-DFILE_FHS_XDG_DIRS -DFILE_DATA_PATH=/usr/share/OpenSupaplex`
+## Authorship and licenses
 
-## License
-As expressed in [cilliemalan's repo](https://github.com/cilliemalan/supaplex), the
-disassembled assembly source code of the game is released under the MIT license.
+The new Android adaptation, touch interface, continuation integration, test automation, and documentation in this fork were produced by **Codex, an OpenAI large language model (LLM)**. Original game development, reverse engineering, engine work, and third-party libraries belong to their respective authors; their attribution and history are retained.
 
-This repository also includes the resources from the original game, now distributed as
-freeware, that belong to their original authors.
+The C reimplementation and this fork's code use **GPL-3.0**. Original game data is separate from that code license. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the original game, OpenSupaplex, SDL2, SDL_mixer, libxmp, and the analysis tool REA.
 
-On the other hand, I release the reimplementation in C under the GPLv3 license.
-
-If you have a problem with this please don't hesitate to contact me.
+Bug reports and patches are welcome: [contribution guide](CONTRIBUTING.md).

@@ -1,0 +1,14 @@
+PASS game surface fills screen
+PASS D-pad right
+PASS direction plus action with two fingers
+PASS slide direction while action stays held
+PASS release one finger independently
+PASS cancel releases every key
+PASS left-handed D-pad
+PASS settings dialog opens
+PASS controller event switches to controller HUD
+PASS controller Capture/Mode opens mobile menu
+PASS controller START opens pause and save
+PASS controller START returns from pause
+HUD checks complete
+

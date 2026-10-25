@@ -23,7 +23,7 @@
 
 uint8_t supportsRealKeyboard(void)
 {
-#if defined(__vita__) || defined(__SWITCH__) || defined(__PSP__) || defined(__NDS__) || defined(_3DS) || defined(__PSL1GHT__) || defined(__WII__) || defined(__WIIU__) || defined(__PS2__)
+#if defined(__ANDROID__) || defined(__vita__) || defined(__SWITCH__) || defined(__PSP__) || defined(__NDS__) || defined(_3DS) || defined(__PSL1GHT__) || defined(__WII__) || defined(__WIIU__) || defined(__PS2__)
     return 0;
 #else
     return 1;
@@ -32,7 +32,7 @@ uint8_t supportsRealKeyboard(void)
 
 uint8_t supportsVirtualKeyboard(void)
 {
-#if defined(__vita__) || defined(_3DS) || defined(__PSL1GHT__)
+#if defined(__ANDROID__) || defined(__vita__) || defined(_3DS) || defined(__PSL1GHT__)
     return 1;
 #elif defined(__SWITCH__)
     // If app is ran in applet mode, SwKbd will not work

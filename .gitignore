@@ -82,3 +82,22 @@ riscos/\!OSupaplex/data
 
 /ps2/OpenSupaplex
 ps2/OpenSupaplex-ps2.zip
+
+# Local Android builds and analysis tools
+android/.gradle/
+android/app/.cxx/
+android/app/build/
+android/local.properties
+android/build-log.txt
+tools/
+*.apk
+
+# Private machine settings, diagnostics, and signing material
+android/*build-log.txt
+*.keystore
+*.jks
+*.sav
+*.SAV
+*.log
+*.hprof
+.idea/

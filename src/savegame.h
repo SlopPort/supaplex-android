@@ -25,6 +25,8 @@
 // they weren't game data only, but also info tightly coupled to the rendering/hardware requirements it had.
 
 uint8_t saveGameState(void);
+uint8_t saveGameStateToFile(const char *filename);
+uint8_t loadGameStateFromFile(const char *filename);
 uint8_t canLoadGameState(void);
 uint8_t loadGameState(void);
 

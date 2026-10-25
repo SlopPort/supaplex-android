@@ -1,0 +1,13 @@
+{
+  "tool": "REA / JADX headless",
+  "apk_sha256": "05afbebd5876b1280bc3728fa87d70ad9001c872aeea2263301620451221552b",
+  "app": {
+    "package": "pl.offline.supaplex",
+    "version_name": "1.2",
+    "version_code": "3",
+    "min_sdk": "21",
+    "target_sdk": "35",
+    "permissions": []
+  },
+  "note": "Public summary; local paths and raw diagnostic logs excluded."
+}

@@ -1,0 +1,142 @@
+[
+  {
+    "file": "BACK.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "200b1118e798b50aa36962467d214ba595475118c82affe447f132cd90db72ef"
+  },
+  {
+    "file": "CHARS6.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "e2a68424f31b21b38ce3ff4ed3a16f993878bd5411c9298f8ab199c44c3cbb74"
+  },
+  {
+    "file": "CHARS8.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "80f48aad089f42dab793802bddf5cbbf46eebd12923e6600cb5ab30e5e0bf997"
+  },
+  {
+    "file": "CONTROLS.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "ece4bfb377f834d3c9cadb609065f277dcc9f2bbfa5df1697395b77cb497f46e"
+  },
+  {
+    "file": "DEMO0.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "75488cb462a9c6dcac1fd41fb773187ac1c9462ac8d1492904ae21c35110574c"
+  },
+  {
+    "file": "DEMO1.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "3aa8669a7e9816fafc7ceaa753f26065942ff1b880ab6d5a053ea7964568f6f3"
+  },
+  {
+    "file": "DEMO2.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "6f39061618f2584530d4dd65dd672e43ea5a9ccc772e50f8bbc83b1d1bfb7885"
+  },
+  {
+    "file": "DEMO3.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "65252b75704c7691ec2684769e123fcd1a56e9a6cbcd1cace94033cd7e2f51f5"
+  },
+  {
+    "file": "DEMO4.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "9ca610478400c1340c24bcfce68c88b58057b7871c888fa1e199789e4ec57e1b"
+  },
+  {
+    "file": "DEMO5.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "df108040f27049516be010c41407614f273b02b019113f51564118648e03e2c6"
+  },
+  {
+    "file": "DEMO6.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "7b0d2b2feb67c4df7c4644817fc1909be103dd203a973c75131bd8cebc2f8659"
+  },
+  {
+    "file": "DEMO7.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "83adaa65cae1547ddb3d6bee0ebb11f663afe3e2e78516d95e319716ce7b082c"
+  },
+  {
+    "file": "DEMO8.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "fe00162d5244866a156850708c0c06458ee213b06591ccf7566090228890ab93"
+  },
+  {
+    "file": "DEMO9.BIN",
+    "same_as_upstream": false,
+    "sha256_dos": "d5a9699809ce710bce6bbca4be528efc1be75388281d1ee751862f50179688cb"
+  },
+  {
+    "file": "FIXED.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "ba9781a4809690b86248cf08f18e953ae6ec6bcc487f33d21fbca28f0ba845d4"
+  },
+  {
+    "file": "GFX.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "2eaf2f24f4a269d3b81307ec60cd1da6b9751f12d3c39396ecfc66d70d790cdc"
+  },
+  {
+    "file": "LEVEL.LST",
+    "same_as_upstream": true,
+    "sha256_dos": "02433076f2c92f3bb5a48a7e47cde3fe4cfc7822eb2c1b3dd34b3c151aef5cf9"
+  },
+  {
+    "file": "LEVELS.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "f41f3ad35b3eca845baceb1e11db61f185b45b38deefb39f67ef6c3dfc33fbb0"
+  },
+  {
+    "file": "MENU.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "1c74bbaf8a99be83dba16b26440c9bba5ffc3190af3abb205753394c4e9b9002"
+  },
+  {
+    "file": "MOVING.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "959b3ea9366421d9404a357abb1e8410959e02fade6b8a853350c0aa35b5b679"
+  },
+  {
+    "file": "myspsig.txt",
+    "same_as_upstream": false,
+    "sha256_dos": "6c0ec84c45d346fce21f087a16be91256296c0af9534347acdcefe5f4f3d9e2f"
+  },
+  {
+    "file": "PALETTES.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "ce4eb1f9d70cd667c65651b69aa7e18493ae41f80ef0a41f0fc639003394a94c"
+  },
+  {
+    "file": "PANEL.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "c235f859e68f8b56780e082b2c0a1a65b281584ab5b5fc3c363a711a0c351a8f"
+  },
+  {
+    "file": "README.TXT",
+    "same_as_upstream": false,
+    "sha256_dos": "5484ec3a261afedb40d5808c0cb393f47998732d4f7e803814018a607c891d16"
+  },
+  {
+    "file": "spfix63.doc",
+    "same_as_upstream": false,
+    "sha256_dos": "8f196aecb9d6badc6c2e6901e09b0ebeb160f8484889e2b5fc9f81bb18cdef73"
+  },
+  {
+    "file": "TITLE.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "a389ea7af181d55d8080406c9d3a24b72b7ffb9c109e13134b58e85dea94f476"
+  },
+  {
+    "file": "TITLE1.DAT",
+    "same_as_upstream": true,
+    "sha256_dos": "f0399b52cc39b1afc38987fcf81699ba07dcc8370d100bc17fe216c50f9e45a1"
+  },
+  {
+    "file": "TITLE2.DAT",
+    "same_as_upstream": false,
+    "sha256_dos": "baf8131b36ff8137e3a9bdec707fb3914ac335868c3d9a7b3e93359bc3a6ed64"
+  }
+]

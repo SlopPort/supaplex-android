@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- SDL enables its API-26 mouse adapter only behind SDK_INT >= 26.
+         Lint does not follow the factory selection across the adapter classes. -->
+    <issue id="NewApi">
+        <ignore path="../../vendor/SDL/android-project/app/src/main/java/org/libsdl/app/SDLControllerManager.java"/>
+    </issue>
+    <!-- SDL's direct Steam BLE transport is permission-guarded in
+         HIDDeviceManager.initializeBluetooth(). Standard Android controller
+         input does not use it. This game never opens audio capture or haptics.
+         Keep permission checks active in all application-owned sources. -->
+    <issue id="MissingPermission">
+        <ignore path="../../vendor/SDL/android-project/app/src/main/java/org/libsdl/app/HIDDeviceBLESteamController.java"/>
+        <ignore path="../../vendor/SDL/android-project/app/src/main/java/org/libsdl/app/HIDDeviceManager.java"/>
+        <ignore path="../../vendor/SDL/android-project/app/src/main/java/org/libsdl/app/SDLAudioManager.java"/>
+        <ignore path="../../vendor/SDL/android-project/app/src/main/java/org/libsdl/app/SDLControllerManager.java"/>
+    </issue>
+</lint>

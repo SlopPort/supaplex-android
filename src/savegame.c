@@ -23,6 +23,13 @@
 #include "config.h"
 #include "demo.h"
 #include "utils.h"
+#include "file.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+extern uint16_t gCurrentSelectedLevelIndex;
+extern uint8_t gHasUserCheated;
 
 // These two are some kind of magic number to identify savegames
 // uint16_t word_5A309 = 0x5053;
@@ -124,9 +131,13 @@ uint8_t saveCurrentLevelGameState(Config *config)
     return 0;
 }
 
-uint8_t saveGameState()
+uint8_t saveGameState(void) { return saveGameStateToFile(gSavegameSavFilename); }
+
+uint8_t saveGameStateToFile(const char *filename)
 {
-    Config *config = initializeConfigForWriting(gSavegameSavFilename);
+    char temporary[kMaxFilePathLength];
+    snprintf(temporary, sizeof(temporary), "%s.tmp", filename);
+    Config *config = initializeConfigForWriting(temporary);
 
     if (config == NULL)
     {
@@ -205,10 +216,25 @@ uint8_t saveGameState()
     SAVE_GAME_STATE_CONFIG_INT(ShouldExitLevel);
     SAVE_GAME_STATE_CONFIG_INT(QuitLevelCountdown);
     SAVE_GAME_STATE_CONFIG_INT(AdditionalInfoInGamePanelFrameCounter);
-    saveCurrentLevelGameState(config);
-
+    int failed = saveCurrentLevelGameState(config);
+    // Optional continuation metadata; older debug snapshots remain readable.
+    SAVE_GAME_STATE_CONFIG_INT(CurrentSelectedLevelIndex);
+    SAVE_GAME_STATE_CONFIG_INT(CurrentPlayerIndex);
+    SAVE_GAME_STATE_CONFIG_INT(HasUserCheated);
+    SAVE_GAME_STATE_CONFIG_BASE64("LevelsFile", gLevelsDatFilename, sizeof(gLevelsDatFilename));
+    SAVE_GAME_STATE_CONFIG_BASE64("LevelListFile", gLevelLstFilename, sizeof(gLevelLstFilename));
+    SAVE_GAME_STATE_CONFIG_BASE64("PlayersFile", gPlayerLstFilename, sizeof(gPlayerLstFilename));
+    SAVE_GAME_STATE_CONFIG_BASE64("HallFile", gHallfameLstFilename, sizeof(gHallfameLstFilename));
+    failed |= finishConfigWriting(config);
     destroyConfig(config);
-
+    char source[kMaxFilePathLength], destination[kMaxFilePathLength];
+    getWritableFilePath(temporary, source);
+    getWritableFilePath(filename, destination);
+#ifdef _WIN32
+    if (failed || !MoveFileExA(source, destination, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) { remove(source); return 1; }
+#else
+    if (failed || rename(source, destination) != 0) { remove(source); return 1; }
+#endif
     return 0;
 }
 
@@ -316,9 +342,11 @@ uint8_t loadCurrentLevelGameState(Config *config)
     return 0;
 }
 
-uint8_t loadGameState()
+uint8_t loadGameState(void) { return loadGameStateFromFile(gSavegameSavFilename); }
+
+uint8_t loadGameStateFromFile(const char *filename)
 {
-    Config *config = initializeConfigForReading(gSavegameSavFilename);
+    Config *config = initializeConfigForReading(filename);
 
     if (config == NULL)
     {
@@ -385,7 +413,21 @@ uint8_t loadGameState()
     LOAD_GAME_STATE_CONFIG_INT(ShouldExitLevel);
     LOAD_GAME_STATE_CONFIG_INT(QuitLevelCountdown);
     LOAD_GAME_STATE_CONFIG_INT(AdditionalInfoInGamePanelFrameCounter);
-    loadCurrentLevelGameState(config);
+    if (loadCurrentLevelGameState(config) != 0) { destroyConfig(config); return 1; }
+    if (strcmp(filename, "CONTINUE.SAV") == 0) {
+        LOAD_GAME_STATE_CONFIG_INT(CurrentSelectedLevelIndex);
+        LOAD_GAME_STATE_CONFIG_INT(CurrentPlayerIndex);
+        LOAD_GAME_STATE_CONFIG_INT(HasUserCheated);
+        LOAD_GAME_STATE_CONFIG_BASE64("LevelsFile", gLevelsDatFilename, sizeof(gLevelsDatFilename));
+        LOAD_GAME_STATE_CONFIG_BASE64("LevelListFile", gLevelLstFilename, sizeof(gLevelLstFilename));
+        LOAD_GAME_STATE_CONFIG_BASE64("PlayersFile", gPlayerLstFilename, sizeof(gPlayerLstFilename));
+        LOAD_GAME_STATE_CONFIG_BASE64("HallFile", gHallfameLstFilename, sizeof(gHallfameLstFilename));
+        gLevelsDatFilename[sizeof(gLevelsDatFilename)-1] = 0;
+        gLevelLstFilename[sizeof(gLevelLstFilename)-1] = 0;
+        gPlayerLstFilename[sizeof(gPlayerLstFilename)-1] = 0;
+        gHallfameLstFilename[sizeof(gHallfameLstFilename)-1] = 0;
+        if (gCurrentSelectedLevelIndex < 1 || gCurrentSelectedLevelIndex > kNumberOfLevels || gCurrentPlayerIndex >= kNumberOfPlayers) { destroyConfig(config); return 1; }
+    }
 #undef LOAD_GAME_STATE_CONFIG_INT
 
     destroyConfig(config);
