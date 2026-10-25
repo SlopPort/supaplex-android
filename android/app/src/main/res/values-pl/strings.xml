@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="import_data">Import plików gry / oryginalnych dźwięków</string>
+    <string name="import_data_help">Zamknij grę, a potem otwórz Supaplex ponownie, aby wybrać własne pliki. Bieżący poziom zostanie zapisany, jeśli zapis jest teraz dostępny. Dotychczasowe zapisy i ustawienia zostaną zachowane. Na ekranie importu możesz też zachować obecne pliki.</string>
+    <string name="close_game">Zamknij grę</string>
     <string name="resume_title">Wznowić zapisany poziom?</string>
     <string name="resume_message">Wrócisz do zapisanej planszy, pozycji, przedmiotów i czasu.</string>
     <string name="resume">Wznów</string>

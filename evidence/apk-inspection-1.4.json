@@ -1,12 +1,6 @@
 {
   "tool": "REA / JADX headless",
-  "apk_sha256": "ef06ca3d015fe3ebaeea5f14b93e870a4b7a3f9fd211ff348906d43fd0db9c9f",
-  "apk_assets": [
-    "assets/licenses/OpenSupaplex-GPL-3.0.txt",
-    "assets/licenses/SDL2-zlib.txt",
-    "assets/licenses/SDL2_mixer-zlib.txt",
-    "assets/licenses/libxmp.txt"
-  ],
+  "apk_sha256": "ebcceabc1cd2a9e944a4231d08b303c04c67f2bbdbfa8d76abe1e5d297e52fbb",
   "app": {
     "package_name": "pl.offline.supaplex",
     "version_name": "1.4",
@@ -14,5 +8,12 @@
     "min_sdk": "21",
     "target_sdk": "35",
     "permissions": []
-  }
+  },
+  "apk_assets": [
+    "assets/licenses/OpenSupaplex-GPL-3.0.txt",
+    "assets/licenses/SDL2-zlib.txt",
+    "assets/licenses/SDL2_mixer-zlib.txt",
+    "assets/licenses/libxmp.txt",
+    "assets/licenses/generated-audio-cc0.txt"
+  ]
 }

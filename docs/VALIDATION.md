@@ -3,9 +3,9 @@
 ## 1.4 — user-supplied game data
 
 - `assembleDebug assembleDebugAndroidTest lintDebug` passed for the import build.
-- 25 generated-fixture import and procedural-audio checks passed on Huawei P9 lite / VNS-L21 with LineageOS Android 10. They cover absent/incomplete data, normalization, allowlisting, traversal, duplicates, size limits, the startup marker and preservation of an existing save. Audio checks cover seven distinct, bounded generated WAV effects, preservation of supplied audio, fallback files for the existing sound modes, absence of generated music, and acceptance of one generated WAV by Android MediaPlayer's decoder. Decoder acceptance is not a speaker or gameplay listening test.
+- 36 generated-fixture import and procedural-audio checks passed on Huawei P9 lite / VNS-L21 with LineageOS Android 10. They cover absent/incomplete data, normalization, allowlisting, traversal, duplicates, size limits, the startup marker and preservation of an existing save. Audio checks cover seven distinct, bounded generated WAV effects, preservation of supplied audio, fallback files for the existing sound modes, absence of original music, and acceptance of one generated effect WAV by Android MediaPlayer's decoder. Music checks cover five distinct FM compositions, bounded PCM with silent loop endpoints, and decoding of all five tracks. Decoder acceptance is not a speaker or gameplay listening test.
 - Fixtures are generated from zero-filled buffers; no original game resources are packaged with the test APK. These structural checks do not establish that arbitrary imported resources are playable or legally redistributable.
-- The system ZIP picker imported a personal PC/DOS copy on Huawei; the saved level resumed successfully. After privately setting aside the old audio directory, a cold launch generated the replacement effects. Playback during gameplay and acceptable volume were confirmed on the phone. The folder-picker path and other Android versions have not been manually verified. Earlier interface/engine results below are historical, not rerun for this release.
+- The system ZIP picker imported a personal PC/DOS copy on Huawei; the saved level resumed successfully. After privately setting aside the old audio directory, a cold launch generated the replacement effects. Playback during gameplay and acceptable volume were confirmed on the phone. Folder import was also exercised with a privately extracted Sound Blaster audio set; imported WAV content matched the tool output. Other Android versions have not been manually verified. Android native music hooks now select a generated loop at level start/restart and saved-level load using separate audio randomness. Earlier interface/engine results below are historical, not rerun for this release.
 - Updating the APK preserves existing private data. The new setup requires an explicit user import even if an older version left bundled resources in private storage.
 
 
@@ -79,3 +79,11 @@ adb -s DEVICE_ID shell am instrument -w -e importOnly true pl.offline.supaplex.t
 ```
 
 This selects the generated-fixture import/audio checks through the existing runner; no game data is required. The older HUD checks (without `-e importOnly true`) require compatible game data to be imported first. Their 57-check results above refer to 1.3.1 and were not rerun for 1.4.
+
+## Original-effects extraction
+
+Nine generated-fixture Python tests passed, covering exact PCM preservation, malformed/unsupported driver rejection, complete private import-ZIP creation, duplicate sources and output non-overwrite. A separate run on a private PC/DOS copy recovered all seven embedded VOC effects and created the 35 compatibility WAV filenames. Its private output was imported with Android's folder picker and a sampled installed WAV hash matched the local conversion output. No original driver, PCM payload or user game ZIP is included in this repository.
+
+The first-run audio information dialog was displayed and its dismissal was remembered across a cold launch. This explains the extraction scope and links to the public guide.
+
+Re-import UI validation on Huawei exercised Save and quit → reopen → setup, Keep installed files → saved-level dialog, and HOME → launcher returning to the same SDL process/main instance. The protected pre-test continuation was restored after the save-path check.

@@ -27,6 +27,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     private volatile boolean resumeOnLaunch;
     private boolean progressBusy;
     private boolean exitAfterSaving;
+    private boolean importAfterSaving;
     public static native boolean nativeCanSaveProgress();
     public static native boolean nativeProgressCommand(int command);
     public static native void nativeSelectContinuation();
@@ -126,6 +127,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
             if (isFinishing()) return;
             progressBusy=false;
             if (result<0) {
+                if(importAfterSaving) {prefs.edit().remove("forceDataImport").apply();importAfterSaving=false;}
                 Toast.makeText(this,text(result==-3?R.string.resume_failed:R.string.save_failed),Toast.LENGTH_LONG).show();
                 return;
             }
@@ -221,6 +223,17 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         }, 100);
     }
     void togglePause() { showOptions(); }
+    private void requestDataImport() {
+        if(progressBusy)return;
+        boolean canSave=nativeCanSaveProgress();
+        new AlertDialog.Builder(this).setTitle(text(R.string.import_data)).setMessage(text(R.string.import_data_help))
+            .setNegativeButton(text(R.string.cancel),null)
+            .setPositiveButton(text(canSave?R.string.save_exit:R.string.close_game),(d,w)->{
+                prefs.edit().putBoolean("forceDataImport",true).commit();
+                if(canSave) {importAfterSaving=true;requestProgress(2);if(!progressBusy) {prefs.edit().remove("forceDataImport").apply();importAfterSaving=false;}}
+                else finish();
+            }).show();
+    }
     void showOptions() {
         if (options != null && options.isShowing()) return;
         releaseAll(); nativeSetOverlayPaused(true);
@@ -236,6 +249,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         String stamp = progressFile().isFile() ? " (" + new java.text.SimpleDateFormat("dd.MM HH:mm", new Locale(prefs.getString("language","en"))).format(new java.util.Date(progressFile().lastModified())) + ")" : "";
         progressButton(body, text(R.string.resume_saved)+stamp, 3, progressFile().isFile());
         settingButton(body, text(R.string.controls), this::showTouchSettings);
+        settingButton(body, text(R.string.import_data), this::requestDataImport);
         settingButton(body, text(R.string.language), () -> chooseLanguage(this::rebuildOptions, false));
         body.addView(actions);
         optionAction(actions, text(R.string.back_original), KeyEvent.KEYCODE_ESCAPE, false);

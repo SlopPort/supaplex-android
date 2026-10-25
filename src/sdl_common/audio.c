@@ -68,6 +68,30 @@ uint8_t gIsAudioInitialized = 0;
 void loadMusic(void);
 void destroyMusic(void);
 
+#ifdef __ANDROID__
+static int generatedMusicIndex = 0;
+static int usingGeneratedMusic = 0;
+static Uint32 musicRandomState = 0;
+extern uint8_t isMusicEnabled;
+void androidBeginLevelMusic(void)
+{
+    // Presentation-only randomness must never consume the game's replay RNG.
+    if (!musicRandomState) musicRandomState = (Uint32)SDL_GetPerformanceCounter() ^ SDL_GetTicks() ^ 0x71ab93e5u;
+    if (!musicRandomState) musicRandomState = 1;
+    musicRandomState ^= musicRandomState << 13;
+    musicRandomState ^= musicRandomState >> 17;
+    musicRandomState ^= musicRandomState << 5;
+    generatedMusicIndex = (int)(musicRandomState % 5);
+    if (usingGeneratedMusic && gIsAudioInitialized && musType != SoundTypeNone)
+    {
+        destroyMusic();
+        loadMusic();
+        if (isMusicEnabled) playMusic();
+        SDL_Log("Generated music selected: %d", generatedMusicIndex + 1);
+    }
+}
+#endif
+
 void loadSounds(void);
 void destroySounds(void);
 
@@ -181,6 +205,9 @@ void destroyAudio()
 
 void loadMusic()
 {
+#ifdef __ANDROID__
+    usingGeneratedMusic = 0;
+#endif
     if (gIsAudioInitialized == 0)
     {
         return;
@@ -209,6 +236,15 @@ void loadMusic()
     snprintf(filename, kMaxSoundFilenameLength, "%s/music-%s.xm", kBaseAudioFolder, musicSuffix);
 
     gMusic = Mix_LoadMUS(filename);
+
+#ifdef __ANDROID__
+    if (gMusic == NULL)
+    {
+        snprintf(filename, kMaxSoundFilenameLength, "%s/generated-music-fm2-%d.wav", kBaseAudioFolder, generatedMusicIndex);
+        gMusic = Mix_LoadMUS(filename);
+        usingGeneratedMusic = gMusic != NULL;
+    }
+#endif
 
     if(gMusic == NULL)
     {

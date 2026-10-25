@@ -10,7 +10,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PATTERN = re.compile(r"\.(?:dat|bin|sp|wav|xm|ogg|at3|png|jpe?g|bmp|gif|ico|icns|xcf|i64|zip)$", re.I)
+PATTERN = re.compile(r"\.(?:dat|bin|snd|sp|wav|xm|ogg|at3|png|jpe?g|bmp|gif|ico|icns|xcf|i64|zip)$", re.I)
 
 def forbidden(name):
     return (name.startswith(("resources/", "android/app/src/main/assets/game/"))

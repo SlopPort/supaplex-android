@@ -3990,6 +3990,10 @@ void initializeGameInfo() // sub_48A20   proc near       ; CODE XREF: start+32F
     gIsMurphyGoingThroughPortal &= 0xFF00; // mov byte ptr gIsMurphyGoingThroughPortal, 0
     gPlantedRedDiskCountdown = 0;
     gPlantedRedDiskPosition = 0;
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+    extern void androidBeginLevelMusic(void);
+    androidBeginLevelMusic();
+#endif
 }
 
 void handleGameIterationStarted()
@@ -5174,7 +5178,11 @@ void loadGameSnapshotFile(const char *filename, uint8_t continuation)
     //                     ; handleGameUserInput+6D6j
     loc_49C41();
 #if defined(__ANDROID__) && !defined(HEADLESS_TEST)
-    if (continuation) { extern void androidNotifyProgress(int result); androidNotifyProgress(3); }
+    if (continuation) {
+        extern void androidBeginLevelMusic(void);
+        androidBeginLevelMusic();
+        extern void androidNotifyProgress(int result); androidNotifyProgress(3);
+    }
 #endif
 }
 

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="import_data">Import game files / original sounds</string>
+    <string name="import_data_help">Close the game, then open Supaplex again to choose your own files. The current level will be saved if saving is available now. Existing saves and settings are kept. You can also keep the installed files on the import screen.</string>
+    <string name="close_game">Close game</string>
     <string name="resume_title">Resume saved level?</string>
     <string name="resume_message">Return to the saved board, position, items and time.</string>
     <string name="resume">Resume</string>

@@ -16,6 +16,7 @@ Open the menu with pause at the top right, the three dots at the top left, or ST
 | Return to game | Wróć do gry | Close the pause menu and continue |
 | Hide touch controls | Ukryj przyciski dotykowe | Switch to the minimal touch HUD |
 | Touch controls | Sterowanie dotykowe | Open movement styles and touch settings |
+| Import game files / original sounds | Import plików gry / oryginalnych dźwięków | Save/close, then reopen to choose data without clearing saves |
 | Language / Język | Język / Language | Choose Android UI language |
 | Direction size | Rozmiar kierunków | Resize movement controls, 75–220% |
 | ACTION button size | Rozmiar przycisku AKCJI | Independently resize ACTION, 75–160% |

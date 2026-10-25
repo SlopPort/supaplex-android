@@ -1,27 +1,38 @@
 {
   "version": "1.4",
-  "apk_sha256": "ef06ca3d015fe3ebaeea5f14b93e870a4b7a3f9fd211ff348906d43fd0db9c9f",
+  "apk_sha256": "ebcceabc1cd2a9e944a4231d08b303c04c67f2bbdbfa8d76abe1e5d297e52fbb",
   "device": "Huawei P9 lite / VNS-L21, LineageOS Android 10 / API 29",
   "build": "assembleDebug assembleDebugAndroidTest lintDebug passed",
   "generated_fixture_checks": {
-    "passed": 25,
+    "passed": 36,
     "failed": 0
   },
-  "native_engine": "unchanged from 1.3.1",
+  "extractor_synthetic_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "localized_resource_keys": 59,
+  "native_scope": "Android audio loading/selection hooks added; presentation RNG is separate from game RNG. Gameplay rules are unchanged. Earlier engine replay results are historical, not rerun.",
+  "manual_checks": {
+    "system_zip_picker_import": true,
+    "folder_picker_with_extracted_effects": true,
+    "converted_wav_content_matches_output": true,
+    "resume_saved_level_after_import": true,
+    "generated_fm_music_playback_accepted": true,
+    "first_run_notice_displayed": true,
+    "first_run_notice_remembered_after_restart": true,
+    "reimport_save_and_quit_routes_to_setup": true,
+    "keep_installed_files_cancels_reimport": true,
+    "HOME_launcher_reuses_running_SDL": true
+  },
   "apk_assets": [
     "assets/licenses/OpenSupaplex-GPL-3.0.txt",
     "assets/licenses/SDL2-zlib.txt",
     "assets/licenses/SDL2_mixer-zlib.txt",
-    "assets/licenses/libxmp.txt"
+    "assets/licenses/libxmp.txt",
+    "assets/licenses/generated-audio-cc0.txt"
   ],
   "signing_certificate_matches_1_3_1": true,
   "zip_alignment": "16 KB verified",
-  "audio": "new procedural generator, seven effects; Android decoder accepted generated exit WAV; gameplay playback and volume confirmed on tested phone",
-  "manual_checks": {
-    "system_zip_picker_import": true,
-    "resume_existing_level_after_import": true,
-    "cold_launch_generates_missing_sound_effects": true,
-    "gameplay_sound_and_volume_confirmed_on_device": true,
-    "folder_picker": "not manually verified"
-  }
+  "audio": "Five new CC0 FM compositions; seven new generated effects. Compatible supplied music/effects take priority. Original Sound Blaster extraction separately tested on private data."
 }

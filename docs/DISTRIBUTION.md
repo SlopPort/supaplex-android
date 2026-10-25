@@ -13,3 +13,5 @@ python scripts/verify-distribution.py path/to/Supaplex-Android-1.4.apk
 The build also rejects non-license Android assets. These checks are packaging guards, not a legal certification of every line or third-party license. Keep imported game resources private and outside version control. Code is GPL-3.0; dependency licenses and upstream authorship remain in [third-party notices](../THIRD_PARTY_NOTICES.md).
 
 Rewriting branches and tags does not erase previously downloaded copies or guarantee removal of GitHub caches and objects shared through an upstream fork network. Detaching the fork and any necessary GitHub cache cleanup are separate hosting operations. Do not describe the repository as fully purged from GitHub until those operations are verified.
+
+The repository was detached from the upstream fork network. GitHub reported `fork: false` and no parent/source repository. A check of a known pre-cleanup data path/revision returned HTTP 404. These observed results do not certify deletion of every server cache or externally downloaded copy.

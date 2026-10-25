@@ -68,6 +68,19 @@ public class ImportInstrumentation {
             android.media.MediaPlayer player=new android.media.MediaPlayer();
             try {player.setDataSource(new File(audioRoot,"audio/exit-beep.wav").getPath());player.prepare();check(player.getDuration()>=370 && player.getDuration()<=390,"Android decoder accepts generated WAV");}finally{player.release();}
             check(!new File(audioRoot,"audio/music-beep.xm").exists(),"no original music or melody generated");
+            java.util.HashSet<Integer> musicHashes=new java.util.HashSet<>();
+            for(int variant=0;variant<5;variant++) {
+                byte[] wav=GeneratedMusic.wave(variant);int peak=0;long energy=0;
+                for(int i=44;i<wav.length;i+=2) {int sample=(short)((wav[i]&255)|((wav[i+1]&255)<<8));peak=Math.max(peak,Math.abs(sample));energy+=(long)sample*sample;}
+                musicHashes.add(java.util.Arrays.hashCode(wav));
+                check(wav.length>1000000 && peak>1000 && peak<=25500 && energy>0 && wav[44]==0 && wav[45]==0 && wav[wav.length-1]==0 && wav[wav.length-2]==0,"bounded seamless music endpoints: "+GeneratedMusic.TITLES[variant]);
+            }
+            check(musicHashes.size()==5,"five distinct generated compositions");
+            GeneratedMusic.ensure(audioRoot);
+            for(int variant=0;variant<5;variant++) {
+                android.media.MediaPlayer music=new android.media.MediaPlayer();
+                try {music.setDataSource(new File(audioRoot,"audio/generated-music-"+GeneratedMusic.REVISION+"-"+variant+".wav").getPath());music.prepare();check(music.getDuration()>28000 && music.getDuration()<41000,"Android decodes music variant "+(variant+1));}finally{music.release();}
+            }
             bundle.putString("stream",results.toString());runner.finish(-1,bundle);
         }catch(Throwable e){bundle.putString("stream",results+"FAIL "+e);runner.finish(0,bundle);}
         finally {try{GameData.clear(base);}catch(IOException ignored){}}

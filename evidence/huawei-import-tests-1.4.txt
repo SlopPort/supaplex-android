@@ -23,3 +23,14 @@ PASS user-supplied audio is never replaced
 PASS fallback files cover all existing sound modes
 PASS Android decoder accepts generated WAV
 PASS no original music or melody generated
+PASS bounded seamless music endpoints: Circuit Garden
+PASS bounded seamless music endpoints: Crystal Steps
+PASS bounded seamless music endpoints: Clockwork Rush
+PASS bounded seamless music endpoints: Neon Maze
+PASS bounded seamless music endpoints: Quiet Terminal
+PASS five distinct generated compositions
+PASS Android decodes music variant 1
+PASS Android decodes music variant 2
+PASS Android decodes music variant 3
+PASS Android decodes music variant 4
+PASS Android decodes music variant 5

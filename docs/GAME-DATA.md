@@ -11,6 +11,8 @@ Version 1.4 and later ship the open-source Android port without Supaplex graphic
 
 Import is also required after upgrading from a version that bundled data. Existing saves, players, and touch settings are preserved. This importer does not copy player records, configuration, executables or saves from the selected source. There is no automatic download, and this guide does not provide game files.
 
+The first-run screen explains replacement audio and links to the [original-effects extraction guide](EXTRACT-DOS-AUDIO.md). Existing configured installations see this information once after updating.
+
 ## Required files
 
 Provide these files from the original 111-level PC/DOS distribution:
@@ -30,13 +32,13 @@ Optional `DEMO0.BIN` through `DEMO9.BIN`, extra `LEVEL.Lnn` / `LEVELS.Dnn` sets 
 
 Standard DOS files alone do not provide converted WAV/XM audio. The port instead generates seven new procedural effects for explosions, infotrons, pushing, falling objects, bugs, base tiles and exits. No original samples or melodies are used; the generator is GPL-3.0 code. The fallback effects use the same timbres across the original sound-device options. Compatible user-supplied WAV files take priority.
 
-Original music is neither included nor recreated; music requires your own compatible XM files. Existing sound-effects volume and mute options still apply. Playback and acceptable volume were confirmed during gameplay on the tested Huawei; preferences on other devices may differ.
+Original music is neither included nor recreated. Five new CC0 tracks are generated and randomly selected at each level start, restart or saved-level load. To hear the original music, supply your own compatible XM files. See [generated music and licensing](GENERATED-AUDIO.md). Existing sound-effects volume and mute options still apply. Playback and acceptable volume were confirmed during gameplay on the tested Huawei; preferences on other devices may differ.
 
 ## Import limits and stored data
 
 Imports are limited to 4,096 entries, 8 MiB per accepted file and 32 MiB total; folder nesting is limited to eight levels.
 
-Uninstalling or clearing app storage removes the imported copy and saves. Keep your original files separately. The setup screen currently appears when data has not been imported or required installed files are missing; there is no in-game replacement-data picker.
+Uninstalling or clearing app storage removes the imported copy and saves. Keep your original files separately. To replace data later, use **Pause → Import game files / original sounds**, save/close, then reopen the app. Existing saves/settings are kept. **Keep installed files** cancels a requested re-import without replacing data. Use a compatible game copy for existing saved levels.
 
 ## Source and licensing
 

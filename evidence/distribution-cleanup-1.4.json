@@ -7,5 +7,8 @@
     "v1.3.1"
   ],
   "scope": "Original game resources, derived artwork and level-containing replay payloads removed from reachable branch/tag history; code authorship retained.",
-  "hosting_limit": "Fork-network detachment and GitHub cache/object cleanup are separate operations; this record does not certify deletion of unreachable server objects or external copies."
+  "hosting_limit": "Fork-network detachment and GitHub cache/object cleanup are separate operations; this record does not certify deletion of unreachable server objects or external copies.",
+  "fork_network_detached": true,
+  "github_fork_field": false,
+  "known_old_data_revision_check": "HTTP 404"
 }
