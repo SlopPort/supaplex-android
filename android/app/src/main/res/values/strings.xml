@@ -54,9 +54,15 @@
     <string name="stability_help">Larger: more deliberate turns between horizontal and vertical. Centre and lift still stop input immediately. Applies to the two joystick styles.</string>
     <string name="done">Done</string>
     <string name="reset_controls">Reset touch settings</string>
-    <string name="reset_controls_message">Restore four buttons, default direction and ACTION sizes, opacity, right-handed layout, and default dead zone/stability? Saves, language and picture proportions stay unchanged.</string>
+    <string name="reset_controls_message">Restore four buttons, default direction and ACTION sizes, opacity, right-handed layout, and default placement, arrow spacing and dead zone/stability? Saves, language and picture proportions stay unchanged.</string>
     <string name="mode_split">Split: up/down | left/right</string>
     <string name="help_split">Up/down on the left, left/right on the right (mirrored in left-handed mode). The most recently pressed direction wins; releasing it returns to the other held direction. ACTION is available on both sides.</string>
     <string name="action_size">ACTION button size</string>
     <string name="control_opacity_help">Lower values make the buttons more transparent. Touch input is unchanged.</string>
+    <string name="mode_dual">Two D-pads — one on each side</string>
+    <string name="help_dual">Both D-pads offer all four directions. The most recently pressed direction wins; releasing it returns to the other held direction. ACTION is available above each D-pad. Centres and gaps are neutral.</string>
+    <string name="edge_inset">Move controls inward from screen edges</string>
+    <string name="spacing_x">Left/right arrow spacing</string>
+    <string name="spacing_y">Up/down arrow spacing</string>
+    <string name="placement_help">Spacing changes the gaps between arrow buttons in the button layouts, without resizing them. The edge slider moves controls toward or away from the centre. Layout limits keep the buttons on screen and the two movement groups apart.</string>
 </resources>

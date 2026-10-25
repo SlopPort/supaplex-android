@@ -54,9 +54,15 @@
     <string name="stability_help">Większa: wymaga wyraźniejszego skrętu między poziomem a pionem. Środek i puszczenie nadal zatrzymują sterowanie od razu. Dotyczy obu gałek.</string>
     <string name="done">Gotowe</string>
     <string name="reset_controls">Przywróć ustawienia dotyku</string>
-    <string name="reset_controls_message">Przywrócić cztery przyciski, domyślne rozmiary kierunków i AKCJI, widoczność, układ praworęczny oraz domyślną martwą strefę i stabilizację? Zapis gry, język i proporcje obrazu pozostaną bez zmian.</string>
+    <string name="reset_controls_message">Przywrócić cztery przyciski, domyślne rozmiary kierunków i AKCJI, widoczność, układ praworęczny domyślne rozmieszczenie i odstępy strzałek oraz martwą strefę i stabilizację? Zapis gry, język i proporcje obrazu pozostaną bez zmian.</string>
     <string name="mode_split">Osobno: góra/dół | lewo/prawo</string>
     <string name="help_split">Góra/dół po lewej, lewo/prawo po prawej (odwrotnie w układzie leworęcznym). Ostatni naciśnięty kierunek ma pierwszeństwo; po puszczeniu wraca drugi trzymany. AKCJA jest po obu stronach.</string>
     <string name="action_size">Rozmiar przycisku AKCJI</string>
     <string name="control_opacity_help">Mniejsza wartość oznacza bardziej przezroczyste przyciski. Dotyk działa tak samo.</string>
+    <string name="mode_dual">Dwa krzyżaki — po jednym z każdej strony</string>
+    <string name="help_dual">Oba krzyżaki mają wszystkie cztery kierunki. Ostatnio naciśnięty kierunek ma pierwszeństwo; po puszczeniu wraca drugi trzymany kierunek. AKCJA jest nad każdym krzyżakiem. Środek i przerwy są neutralne.</string>
+    <string name="edge_inset">Odsunięcie sterowania od krawędzi ekranu</string>
+    <string name="spacing_x">Odstęp strzałek lewo/prawo</string>
+    <string name="spacing_y">Odstęp strzałek góra/dół</string>
+    <string name="placement_help">Odstępy zmieniają odległość między strzałkami w układach przyciskowych, bez zmiany ich wielkości. Suwak krawędzi przesuwa sterowanie w stronę środka lub brzegu. Ograniczenia układu utrzymują przyciski na ekranie i rozdzielają obie grupy kierunków.</string>
 </resources>

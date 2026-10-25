@@ -1,0 +1,18 @@
+{
+  "version": "1.5 development build",
+  "device": "Huawei P9 lite VNS-L21, Android 10 / API 29",
+  "hud_checks_passed": 87,
+  "build": "assembleDebug, assembleDebugAndroidTest and lintDebug passed",
+  "scope": [
+    "six control layouts including two full D-pads",
+    "latest direction wins and release resumes other held thumb",
+    "direction and ACTION sizes remain independent",
+    "edge placement and independent horizontal/vertical arrow spacing",
+    "minimum/maximum size and spacing with mirrored layout",
+    "existing controller and language checks"
+  ],
+  "data_preservation": "Saved level and existing imported music hash unchanged after update and checks",
+  "manual": "Two-D-pad overlay visually inspected on the device; comfort still needs user feedback",
+  "localized_resource_keys": 65,
+  "release_status": "Installed development APK; published release remains 1.4"
+}

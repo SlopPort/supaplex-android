@@ -70,16 +70,16 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         LinearLayout body=new LinearLayout(this);body.setOrientation(LinearLayout.VERTICAL);body.setPadding(dp(24),dp(8),dp(24),dp(12));
         settingNote(body,text(R.string.controls_intro));
         RadioGroup group=new RadioGroup(this);body.addView(group);
-        int[] names={R.string.mode_buttons,R.string.mode_fixed,R.string.mode_floating,R.string.mode_swipe,R.string.mode_split};
-        int[] help={R.string.help_buttons,R.string.help_fixed,R.string.help_floating,R.string.help_swipe,R.string.help_split};
-        int selected=Math.max(0,Math.min(TouchControls.SPLIT,prefs.getInt("controlStyle",TouchControls.BUTTONS)));
+        int[] names={R.string.mode_buttons,R.string.mode_fixed,R.string.mode_floating,R.string.mode_swipe,R.string.mode_split,R.string.mode_dual};
+        int[] help={R.string.help_buttons,R.string.help_fixed,R.string.help_floating,R.string.help_swipe,R.string.help_split,R.string.help_dual};
+        int selected=Math.max(0,Math.min(TouchControls.DUAL,prefs.getInt("controlStyle",TouchControls.BUTTONS)));
         TextView description=new TextView(this);
         for(int i=0;i<names.length;i++) {
             RadioButton button=new RadioButton(this);button.setId(100+i);button.setText(text(names[i]));group.addView(button);
         }
         group.check(100+selected);description.setText(text(help[selected]));description.setPadding(0,dp(8),0,dp(12));body.addView(description);
         group.setOnCheckedChangeListener((g,id) -> {
-            int style=id-100;if(style<0 || style>TouchControls.SPLIT)return;
+            int style=id-100;if(style<0 || style>TouchControls.DUAL)return;
             prefs.edit().putInt("controlStyle",style).apply();description.setText(text(help[style]));refreshControls();
         });
         slider(body,text(R.string.deadzone),prefs.getFloat("deadzone",.20f),.08f,.38f,"deadzone");
@@ -87,6 +87,10 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         slider(body,text(R.string.stability),prefs.getFloat("stability",.45f),0f,1f,"stability");
         settingNote(body,text(R.string.stability_help));
         slider(body,text(R.string.control_size),prefs.getFloat("size",1f),.75f,2.2f,"size");
+        slider(body,text(R.string.edge_inset),prefs.getFloat("edgeInset",0f),0f,1f,"edgeInset");
+        slider(body,text(R.string.spacing_x),prefs.getFloat("spacingX",1f),.9f,1.8f,"spacingX");
+        slider(body,text(R.string.spacing_y),prefs.getFloat("spacingY",1f),.9f,1.8f,"spacingY");
+        settingNote(body,text(R.string.placement_help));
         slider(body,text(R.string.action_size),prefs.getFloat("actionSize",1f),.75f,1.6f,"actionSize");
         slider(body,text(R.string.control_opacity),prefs.getFloat("opacity",.64f),.10f,1f,"opacity");
         settingNote(body,text(R.string.control_opacity_help));
@@ -98,7 +102,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         settingButton(body,text(R.string.reset_controls),() -> new AlertDialog.Builder(this)
             .setTitle(text(R.string.reset_controls)).setMessage(text(R.string.reset_controls_message))
             .setNegativeButton(text(R.string.cancel),null).setPositiveButton(text(R.string.ok),(d,w) -> {
-                prefs.edit().remove("controlStyle").remove("deadzone").remove("stability").remove("size").remove("actionSize").remove("opacity").remove("leftHanded").remove("autoPad").apply();
+                prefs.edit().remove("controlStyle").remove("deadzone").remove("stability").remove("size").remove("actionSize").remove("opacity").remove("leftHanded").remove("autoPad").remove("edgeInset").remove("spacingX").remove("spacingY").apply();
                 refreshControls();dialog.dismiss();showTouchSettings();
             }).show());
         dialog.show();
@@ -307,6 +311,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         releaseAll();
         controls.configure(prefs.getFloat("size",1f), prefs.getFloat("opacity",.64f),prefs.getBoolean("leftHanded",false));
         controls.configureAction(prefs.getFloat("actionSize",1f));
+        controls.configurePlacement(prefs.getFloat("edgeInset",0f),prefs.getFloat("spacingX",1f),prefs.getFloat("spacingY",1f));
         controls.configureInput(prefs.getInt("controlStyle",TouchControls.BUTTONS),prefs.getFloat("deadzone",.20f),prefs.getFloat("stability",.45f));
     }
     private int dp(int n) { return Math.round(n * getResources().getDisplayMetrics().density); }

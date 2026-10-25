@@ -6,7 +6,7 @@ import java.util.*;
 
 /** Lightweight vector HUD; no images, services, or rendering loop. GPL-3.0. */
 public final class TouchControls extends View {
-    static final int BUTTONS=0,FIXED=1,FLOATING=2,SWIPE=3,SPLIT=4;
+    static final int BUTTONS=0,FIXED=1,FLOATING=2,SWIPE=3,SPLIT=4,DUAL=5;
     private final GameActivity game;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path path = new Path();
@@ -15,6 +15,7 @@ public final class TouchControls extends View {
     private final int aqua = 0xff8bffe0;
     private float unit=1, vw=960, vh=540, size=1, actionSize=1, opacity=.64f;
     private float safeLeft, safeRight, safeBottom;
+    private float edgeInset,spacingX=1,spacingY=1,stepX,stepY,reachX,reachY;
     private boolean leftHanded, padMode, padConnected;
     private float dx,dy,dr,ax,ay,ar,cx,cy,cr,splitX,secondaryActionX;
     private int style=BUTTONS,movementOwner=-1,verticalOwner=-1,horizontalOwner=-1,lastDirection;
@@ -32,8 +33,13 @@ public final class TouchControls extends View {
     void configure(float scale,float alpha,boolean left) { cancelTouches();size=scale;opacity=alpha;leftHanded=left;layoutControls();setContentDescription(game.text(R.string.hud_description));invalidate(); }
     void configureAction(float scale) { cancelTouches();actionSize=Math.max(.75f,Math.min(1.6f,scale));layoutControls();invalidate(); }
     void configureInput(int mode,float zone,float directionStability) {
-        cancelTouches();style=Math.max(BUTTONS,Math.min(SPLIT,mode));deadzone=Math.max(.08f,Math.min(.38f,zone));
+        cancelTouches();style=Math.max(BUTTONS,Math.min(DUAL,mode));deadzone=Math.max(.08f,Math.min(.38f,zone));
         stability=Math.max(0f,Math.min(1f,directionStability));layoutControls();invalidate();
+    }
+    void configurePlacement(float inset,float horizontal,float vertical) {
+        cancelTouches();edgeInset=Math.max(0,Math.min(1,inset));
+        spacingX=Math.max(.9f,Math.min(1.8f,horizontal));spacingY=Math.max(.9f,Math.min(1.8f,vertical));
+        layoutControls();invalidate();
     }
     void setPadMode(boolean value) { if(padMode!=value) {padMode=value;cancelTouches();invalidate();} }
     void setPadConnected(boolean value) { padConnected=value;invalidate(); }
@@ -52,12 +58,24 @@ public final class TouchControls extends View {
     }
     private void layoutControls() {
         dr=77*size;ar=25*actionSize;cr=24;
-        dx=safeLeft/unit+24+dr;dy=vh-safeBottom/unit-40-dr;
+        float left=safeLeft/unit,right=vw-safeRight/unit,bottom=vh-safeBottom/unit;
+        boolean buttons=style==BUTTONS || style==SPLIT || style==DUAL;
+        float half=dr*.28f;
+        float maxReachX=(right-left-64)/(style==DUAL || style==SPLIT?4:2);
+        float maxReachY=(bottom-(style==DUAL || style==SPLIT?128+2*ar:132))/2;
+        stepX=Math.max(half*2+1,Math.min(dr*.65f*spacingX,maxReachX-half));
+        stepY=Math.max(half*2+1,Math.min(dr*.65f*spacingY,maxReachY-half));
+        reachX=buttons?Math.max(Math.min(dr,maxReachX),stepX+half):dr;
+        reachY=buttons?Math.max(Math.min(dr,maxReachY),stepY+half):dr;
+        float inset=edgeInset*Math.max(0,Math.min(120,(right-left)/2-24-reachX*2));
+        dx=left+24+reachX+inset;dy=bottom-40-reachY;
         ax=vw-safeRight/unit-30-ar;ay=vh-safeBottom/unit-42-ar;
         cx=vw-safeRight/unit-30-cr;cy=ay-ar-cr-23*size;
-        splitX=vw-safeRight/unit-24-dr;secondaryActionX=safeLeft/unit+30+ar;
-        if(style==SPLIT) {ay=dy-dr*.65f-ar-36*size;cx=ax-ar-cr-24*size;cy=ay;}
-        if(leftHanded) {dx=vw-dx;ax=vw-ax;cx=vw-cx;splitX=vw-splitX;secondaryActionX=vw-secondaryActionX;}
+        splitX=right-24-reachX-inset;secondaryActionX=left+30+ar;
+        ax-=inset;cx-=inset;secondaryActionX+=inset;
+        if(style==SPLIT) {ay=Math.max(82+ar,dy-stepY-ar-36*size);cx=ax-ar-cr-24*size;cy=ay;}
+        if(style==DUAL) {ax=splitX;secondaryActionX=dx;ay=Math.max(82+ar,dy-reachY-ar-24);cx=(left+right)/2;cy=ay;}
+        if(leftHanded) {dx=left+right-dx;ax=left+right-ax;cx=left+right-cx;splitX=left+right-splitX;secondaryActionX=left+right-secondaryActionX;}
     }
     private void color(int c,float alpha) {
         paint.setColor(c); paint.setAlpha(Math.round(255*alpha*opacity));
@@ -105,15 +123,17 @@ public final class TouchControls extends View {
             }
             if(style==SPLIT) {
                 direction=lastDirection;
-                drawDirectionButton(c,dx,dy-dr*.65f,0,direction==KeyEvent.KEYCODE_DPAD_UP);
-                drawDirectionButton(c,dx,dy+dr*.65f,180,direction==KeyEvent.KEYCODE_DPAD_DOWN);
-                drawDirectionButton(c,splitX-dr*.65f,dy,270,direction==KeyEvent.KEYCODE_DPAD_LEFT);
-                drawDirectionButton(c,splitX+dr*.65f,dy,90,direction==KeyEvent.KEYCODE_DPAD_RIGHT);
+                drawDirectionButton(c,dx,dy-stepY,0,direction==KeyEvent.KEYCODE_DPAD_UP);
+                drawDirectionButton(c,dx,dy+stepY,180,direction==KeyEvent.KEYCODE_DPAD_DOWN);
+                drawDirectionButton(c,splitX-stepX,dy,270,direction==KeyEvent.KEYCODE_DPAD_LEFT);
+                drawDirectionButton(c,splitX+stepX,dy,90,direction==KeyEvent.KEYCODE_DPAD_RIGHT);
+            } else if(style==DUAL) {
+                drawCross(c,dx,dy,lastDirection);drawCross(c,splitX,dy,lastDirection);
             } else if(style==BUTTONS) {
-                drawDirectionButton(c,dx,dy-dr*.65f,0,direction==KeyEvent.KEYCODE_DPAD_UP);
-                drawDirectionButton(c,dx+dr*.65f,dy,90,direction==KeyEvent.KEYCODE_DPAD_RIGHT);
-                drawDirectionButton(c,dx,dy+dr*.65f,180,direction==KeyEvent.KEYCODE_DPAD_DOWN);
-                drawDirectionButton(c,dx-dr*.65f,dy,270,direction==KeyEvent.KEYCODE_DPAD_LEFT);
+                drawDirectionButton(c,dx,dy-stepY,0,direction==KeyEvent.KEYCODE_DPAD_UP);
+                drawDirectionButton(c,dx+stepX,dy,90,direction==KeyEvent.KEYCODE_DPAD_RIGHT);
+                drawDirectionButton(c,dx,dy+stepY,180,direction==KeyEvent.KEYCODE_DPAD_DOWN);
+                drawDirectionButton(c,dx-stepX,dy,270,direction==KeyEvent.KEYCODE_DPAD_LEFT);
             } else {
                 circle(c,baseX,baseY,dr,active("dpad"),false);
                 paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(1);color(aqua,.24f);c.drawCircle(baseX,baseY,dr*deadzone,paint);paint.setStyle(Paint.Style.FILL);
@@ -132,7 +152,7 @@ public final class TouchControls extends View {
                 paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(1);color(0xffd2e9f4,.3f);c.drawCircle(baseX+x,baseY+y,dr*.29f,paint);paint.setStyle(Paint.Style.FILL);
             }
             drawAction(c,ax,ay);
-            if(style==SPLIT)drawAction(c,secondaryActionX,ay);
+            if(style==SPLIT || style==DUAL)drawAction(c,secondaryActionX,ay);
             circle(c,cx,cy,cr,active("confirm"),false);
             paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(2.5f);paint.setStrokeCap(Paint.Cap.ROUND);color(0xffe6f5ff,1);
             Path check=path;check.reset();check.moveTo(cx-8,cy);check.lineTo(cx-2,cy+6);check.lineTo(cx+9,cy-7);c.drawPath(check,paint);paint.setStyle(Paint.Style.FILL);
@@ -147,13 +167,13 @@ public final class TouchControls extends View {
         text(c,game.text(R.string.action),x,y+ar*.66f,Math.max(6.5f,7.2f*actionSize),aqua,1);
     }
     private int splitButtonAt(float x,float y,boolean vertical) {
-        float offset=dr*.65f,half=dr*.28f;
+        float half=dr*.28f;
         if(vertical && Math.abs(x-dx)<=half) {
-            if(Math.abs(y-(dy-offset))<=half)return KeyEvent.KEYCODE_DPAD_UP;
-            if(Math.abs(y-(dy+offset))<=half)return KeyEvent.KEYCODE_DPAD_DOWN;
+            if(Math.abs(y-(dy-stepY))<=half)return KeyEvent.KEYCODE_DPAD_UP;
+            if(Math.abs(y-(dy+stepY))<=half)return KeyEvent.KEYCODE_DPAD_DOWN;
         } else if(!vertical && Math.abs(y-dy)<=half) {
-            if(Math.abs(x-(splitX-offset))<=half)return KeyEvent.KEYCODE_DPAD_LEFT;
-            if(Math.abs(x-(splitX+offset))<=half)return KeyEvent.KEYCODE_DPAD_RIGHT;
+            if(Math.abs(x-(splitX-stepX))<=half)return KeyEvent.KEYCODE_DPAD_LEFT;
+            if(Math.abs(x-(splitX+stepX))<=half)return KeyEvent.KEYCODE_DPAD_RIGHT;
         }
         return 0;
     }
@@ -163,12 +183,20 @@ public final class TouchControls extends View {
         paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(pressed?2:1);color(pressed?aqua:0xffcce4ed,pressed?1:.65f);
         c.drawRoundRect(x-half,y-half,x+half,y+half,8*size,8*size,paint);paint.setStyle(Paint.Style.FILL);arrow(c,x,y,angle,pressed);
     }
-    private int buttonAt(float x,float y) {
-        float offset=dr*.65f,half=dr*.28f;
-        if(Math.abs(x-dx)<=half && Math.abs(y-(dy-offset))<=half)return KeyEvent.KEYCODE_DPAD_UP;
-        if(Math.abs(x-(dx+offset))<=half && Math.abs(y-dy)<=half)return KeyEvent.KEYCODE_DPAD_RIGHT;
-        if(Math.abs(x-dx)<=half && Math.abs(y-(dy+offset))<=half)return KeyEvent.KEYCODE_DPAD_DOWN;
-        if(Math.abs(x-(dx-offset))<=half && Math.abs(y-dy)<=half)return KeyEvent.KEYCODE_DPAD_LEFT;
+    private void drawCross(Canvas c,float x,float y,int direction) {
+        drawDirectionButton(c,x,y-stepY,0,direction==KeyEvent.KEYCODE_DPAD_UP);
+        drawDirectionButton(c,x+stepX,y,90,direction==KeyEvent.KEYCODE_DPAD_RIGHT);
+        drawDirectionButton(c,x,y+stepY,180,direction==KeyEvent.KEYCODE_DPAD_DOWN);
+        drawDirectionButton(c,x-stepX,y,270,direction==KeyEvent.KEYCODE_DPAD_LEFT);
+    }
+    private int buttonAt(float x,float y) { return crossButtonAt(x,y,dx); }
+    private int crossButtonAt(float x,float y,float centre) {
+        x+=dx-centre;
+        float half=dr*.28f;
+        if(Math.abs(x-dx)<=half && Math.abs(y-(dy-stepY))<=half)return KeyEvent.KEYCODE_DPAD_UP;
+        if(Math.abs(x-(dx+stepX))<=half && Math.abs(y-dy)<=half)return KeyEvent.KEYCODE_DPAD_RIGHT;
+        if(Math.abs(x-dx)<=half && Math.abs(y-(dy+stepY))<=half)return KeyEvent.KEYCODE_DPAD_DOWN;
+        if(Math.abs(x-(dx-stepX))<=half && Math.abs(y-dy)<=half)return KeyEvent.KEYCODE_DPAD_LEFT;
         return 0;
     }
     private int joystickDirection(Finger f) {
@@ -188,14 +216,14 @@ public final class TouchControls extends View {
         if(inside(x,y,vw-safeRight/unit-32,32,25))return "pause";
         if(padMode) return y<57 && x>safeLeft/unit+60 && x<safeLeft/unit+165?"restore":null;
         if(inside(x,y,ax,ay,ar+9))return "action";
-        if(style==SPLIT && inside(x,y,secondaryActionX,ay,ar+9))return "action";
+        if((style==SPLIT || style==DUAL) && inside(x,y,secondaryActionX,ay,ar+9))return "action";
         if(inside(x,y,cx,cy,cr+8))return "confirm";
-        if(style==SPLIT) {
-            if(inside(x,y,dx,dy,dr+9))return "splitVertical";
-            if(inside(x,y,splitX,dy,dr+9))return "splitHorizontal";
+        if(style==SPLIT || style==DUAL) {
+            if(Math.abs(x-dx)<=reachX+9 && Math.abs(y-dy)<=reachY+9)return "splitVertical";
+            if(Math.abs(x-splitX)<=reachX+9 && Math.abs(y-dy)<=reachY+9)return "splitHorizontal";
             return null;
         }
-        if(inside(x,y,dx,dy,dr+9))return "dpad";
+        if(style==BUTTONS ? Math.abs(x-dx)<=reachX+9 && Math.abs(y-dy)<=reachY+9 : inside(x,y,dx,dy,dr+9))return "dpad";
         if(style==FLOATING && GameActivity.nativeCanSaveProgress() && y>vh*.50f && y<vh-safeBottom/unit-12
             && (leftHanded?x>vw*.57f:x<vw*.43f))return "dpad";
         return null;
@@ -208,14 +236,14 @@ public final class TouchControls extends View {
                 f.direction=style==BUTTONS?buttonAt(f.x,f.y):joystickDirection(f);
                 if(f.direction!=0)keys.add(f.direction);
             } else if(f.target.equals("splitVertical") || f.target.equals("splitHorizontal")) {
-                int previous=f.direction;f.direction=splitButtonAt(f.x,f.y,f.target.equals("splitVertical"));
+                int previous=f.direction;f.direction=style==DUAL?crossButtonAt(f.x,f.y,f.target.equals("splitVertical")?dx:splitX):splitButtonAt(f.x,f.y,f.target.equals("splitVertical"));
                 if(f.direction!=0 && f.direction!=previous)f.sequence=++movementSequence;
                 if(f.direction!=0 && f.sequence>newest) {newest=f.sequence;splitDirection=f.direction;}
             } else if(f.target.equals("action") && (inside(f.x,f.y,ax,ay,ar*1.6f)
-                || style==SPLIT && inside(f.x,f.y,secondaryActionX,ay,ar*1.6f)))keys.add(KeyEvent.KEYCODE_SPACE);
+                || (style==SPLIT || style==DUAL) && inside(f.x,f.y,secondaryActionX,ay,ar*1.6f)))keys.add(KeyEvent.KEYCODE_SPACE);
             else if(f.target.equals("confirm") && inside(f.x,f.y,cx,cy,cr*1.7f))keys.add(KeyEvent.KEYCODE_ENTER);
         }
-        if(style==SPLIT) {lastDirection=splitDirection;if(splitDirection!=0)keys.add(splitDirection);}
+        if(style==SPLIT || style==DUAL) {lastDirection=splitDirection;if(splitDirection!=0)keys.add(splitDirection);}
         game.setTouchKeys(keys);invalidate();
     }
     @Override public boolean performClick() { super.performClick(); game.showOptions(); return true; }

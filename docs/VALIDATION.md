@@ -87,3 +87,9 @@ Nine generated-fixture Python tests passed, covering exact PCM preservation, mal
 The first-run audio information dialog was displayed and its dismissal was remembered across a cold launch. This explains the extraction scope and links to the public guide.
 
 Re-import UI validation on Huawei exercised Save and quit → reopen → setup, Keep installed files → saved-level dialog, and HOME → launcher returning to the same SDL process/main instance. The protected pre-test continuation was restored after the save-path check.
+
+## Development build 1.5: two D-pads and control placement
+
+The installed development build passed 87 HUD checks on Huawei P9 lite (Android 10 / API 29), including both full D-pads, direction priority between thumbs, returning to a held direction, neutral centres, independent ACTION sizing, and layout bounds at minimum/maximum size and spacing with mirrored controls. Existing touch, controller menu and language checks also passed. `assembleDebug`, `assembleDebugAndroidTest`, and `lintDebug` passed. The saved-level file and imported music were unchanged after the update and checks.
+
+The two-pad overlay was visually inspected on the device. Comfortable spacing still needs user play feedback. The public release remains 1.4; these additions are in the 1.5 development build. See [test results](../evidence/huawei-touch-tests-1.5.txt) and [validation summary](../evidence/validation-summary-1.5.json).

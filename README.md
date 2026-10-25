@@ -45,7 +45,7 @@ For a gamepad, use the D-pad or left stick to move, **X** for action, **A** to c
 
 ## Choose a movement style
 
-Open **Pause → Touch controls**. All five styles send only the four original directions; they do not change the engine or game speed.
+Open **Pause → Touch controls**. The published 1.4 APK offers the five styles below. The development build (1.5) adds a sixth, described after the table. All styles send only the four original directions; they do not change the engine or game speed.
 
 | Style | How it works |
 | --- | --- |
@@ -54,6 +54,8 @@ Open **Pause → Touch controls**. All five styles send only the four original d
 | Floating joystick | During a level, the base appears where the thumb touches the lower movement side; drag from there. |
 | Swipe and hold — locked direction | Swipe once, keep the finger down to continue, and lift to stop. Choose a new direction with a new swipe. |
 | Split: up/down &#124; left/right | Up/down on the left; left/right on the right. ACTION is duplicated so either direction pair can combine with action using two fingers. |
+
+The development build (1.5) also adds **Two D-pads — one on each side**, with all four directions and an ACTION button available to either thumb. Touch settings now include inward position from the screen edges and independent left/right and up/down arrow spacing. These settings move the buttons without resizing them; screen limits restrict extreme combinations. The published 1.4 APK does not include these additions.
 
 In the split style, the latest newly pressed direction wins. Releasing it returns to the other direction if that button is still held. Left-handed mode mirrors the layout. Joysticks also have **dead zone** and **direction stability** sliders to reduce accidental movement and diagonal jitter. Stopping input does not cancel a tile animation already in progress; this is not a guaranteed one-tile-per-tap mode.
 

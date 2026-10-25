@@ -59,7 +59,7 @@ public class HudInstrumentation extends Instrumentation {
         runOnMainSync(() -> controls.configureAction(1.6f));
         check(geometry(controls,"ar")>smallAction && geometry(controls,"dr")==directionRadius,"ACTION slider leaves direction size unchanged");
         runOnMainSync(() -> controls.configureAction(.75f));
-        for(int style=TouchControls.BUTTONS;style<=TouchControls.SPLIT;style++) {
+        for(int style=TouchControls.BUTTONS;style<=TouchControls.DUAL;style++) {
             mode(controls,style,.45f);float x=geometry(controls,"ax"),y=geometry(controls,"ay");
             down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,x,y);
             check(held().contains(KeyEvent.KEYCODE_SPACE),"small ACTION works with 220 percent directions and low opacity in style "+style);
@@ -67,6 +67,41 @@ public class HudInstrumentation extends Instrumentation {
             checkDirection(0,"small ACTION releases in style "+style);
         }
         runOnMainSync(() -> {controls.configure(1,.64f,false);controls.configureAction(1);});
+        mode(controls,TouchControls.BUTTONS,.45f);
+    }
+    private void dualChecks(TouchControls controls) throws Exception {
+        mode(controls,TouchControls.DUAL,.45f);
+        runOnMainSync(() -> controls.configurePlacement(0,1,1));
+        float left=geometry(controls,"dx"),right=geometry(controls,"splitX"),y=geometry(controls,"dy");
+        float sx=geometry(controls,"stepX"),sy=geometry(controls,"stepY");
+        int[] directions={KeyEvent.KEYCODE_DPAD_UP,KeyEvent.KEYCODE_DPAD_RIGHT,KeyEvent.KEYCODE_DPAD_DOWN,KeyEvent.KEYCODE_DPAD_LEFT};
+        for(float centre:new float[]{left,right})for(int i=0;i<4;i++) {
+            float x=centre+(i==1?sx:i==3?-sx:0),cy=y+(i==0?-sy:i==2?sy:0);
+            down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,x,cy);
+            checkDirection(directions[i],"dual cross direction "+i+" at "+(centre==left?"left":"right"));
+            single(MotionEvent.ACTION_CANCEL,x,cy);
+        }
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,left,y-sy);
+        event(MotionEvent.ACTION_POINTER_DOWN | (1<<8),new float[]{left,right+sx},new float[]{y-sy,y},new int[]{0,1});
+        checkDirection(KeyEvent.KEYCODE_DPAD_RIGHT,"dual latest direction wins across thumbs");
+        event(MotionEvent.ACTION_POINTER_UP | (1<<8),new float[]{left,right+sx},new float[]{y-sy,y},new int[]{0,1});
+        checkDirection(KeyEvent.KEYCODE_DPAD_UP,"dual releasing latest returns to other thumb");
+        single(MotionEvent.ACTION_CANCEL,left,y-sy);
+        down=SystemClock.uptimeMillis();single(MotionEvent.ACTION_DOWN,right,y);
+        checkDirection(0,"dual centre is neutral");single(MotionEvent.ACTION_CANCEL,right,y);
+        for(boolean mirror:new boolean[]{false,true})for(float scale:new float[]{.75f,2.2f})for(float spacing:new float[]{.9f,1.8f}) {
+            runOnMainSync(() -> {controls.configure(scale,.64f,mirror);controls.configurePlacement(1,spacing,spacing);});
+            float a=geometry(controls,"dx"),b=geometry(controls,"splitX"),rx=geometry(controls,"reachX"),ry=geometry(controls,"reachY"),cy=geometry(controls,"dy");
+            check(Math.min(a,b)-rx>=0 && Math.max(a,b)+rx<=w && Math.abs(a-b)>=2*rx && cy-ry>=64 && cy+ry<=h,
+                "dual bounds and nonoverlap: mirror="+mirror+" size="+scale+" spacing="+spacing);
+            float step=geometry(controls,"stepX"),half=geometry(controls,"dr")*.28f;
+            check(step>2*half,"dual arrow buttons do not overlap at limits");
+        }
+        runOnMainSync(() -> {controls.configure(1,.64f,false);controls.configurePlacement(0,1,1);});
+        float before=geometry(controls,"dx"),size=geometry(controls,"dr"),step=geometry(controls,"stepX");
+        runOnMainSync(() -> controls.configurePlacement(1,1.8f,1.8f));
+        check(geometry(controls,"dx")>before && geometry(controls,"stepX")>step && geometry(controls,"dr")==size,"placement and spacing move buttons without resizing");
+        runOnMainSync(() -> controls.configurePlacement(0,1,1));
         mode(controls,TouchControls.BUTTONS,.45f);
     }
     private void newInputChecks(TouchControls controls,float y) throws Exception {
@@ -154,6 +189,7 @@ public class HudInstrumentation extends Instrumentation {
             TouchControls controls=(TouchControls)field("controls");
             runOnMainSync(() -> controls.configure(1,.64f,false));
             runOnMainSync(() -> controls.configureAction(1));
+            runOnMainSync(() -> controls.configurePlacement(0,1,1));
             mode(controls,TouchControls.BUTTONS,.45f);
             w=controls.getWidth();h=controls.getHeight();unit=Math.min(w/960f,h/540f);w/=unit;h/=unit;
             Field surfaceField=Class.forName("org.libsdl.app.SDLActivity").getDeclaredField("mSurface");surfaceField.setAccessible(true);
@@ -177,6 +213,7 @@ public class HudInstrumentation extends Instrumentation {
             runOnMainSync(() -> controls.configure(1,.64f,false));
             newInputChecks(controls,y);
             sizingChecks(controls);
+            dualChecks(controls);
             runOnMainSync(() -> activity.showOptions());SystemClock.sleep(100);
             check(((AlertDialog)field("options")).isShowing(),"settings dialog opens");
             runOnMainSync(() -> ((AlertDialog)getFieldUnchecked("options")).dismiss());SystemClock.sleep(100);
