@@ -42,7 +42,7 @@ public class ImportActivity extends Activity {
     private void launch() {startActivity(new Intent(this,GameActivity.class));finish();}
     private int count;
     private long bytes;
-    private void folder(Uri tree,String id,File stage,int depth) throws IOException {
+    private void folder(Uri tree,String id,File stage,int depth,String path) throws IOException {
         if(depth>8)throw new IOException("Folder nesting too deep");
         Uri children=DocumentsContract.buildChildDocumentsUriUsingTree(tree,id);
         try(Cursor cursor=getContentResolver().query(children,new String[]{DocumentsContract.Document.COLUMN_DOCUMENT_ID,DocumentsContract.Document.COLUMN_DISPLAY_NAME,DocumentsContract.Document.COLUMN_MIME_TYPE},null,null,null)) {
@@ -50,9 +50,9 @@ public class ImportActivity extends Activity {
             while(cursor.moveToNext()) {
                 if(++count>4096)throw new IOException("Too many files");
                 String child=cursor.getString(0),name=cursor.getString(1),mime=cursor.getString(2);
-                if(DocumentsContract.Document.MIME_TYPE_DIR.equals(mime))folder(tree,child,stage,depth+1);
+                if(DocumentsContract.Document.MIME_TYPE_DIR.equals(mime))folder(tree,child,stage,depth+1,path+"/"+name);
                 else {
-                    String target=GameData.target((id.toLowerCase(java.util.Locale.ROOT).endsWith("audio")?"audio/":"")+name);
+                    String target=GameData.target(path+"/"+name);
                     if(target!=null)try(InputStream in=getContentResolver().openInputStream(DocumentsContract.buildDocumentUriUsingTree(tree,child))) {
                         if(in==null)throw new IOException("Cannot open file");GameData.copy(in,stage,target);bytes+=new File(stage,target).length();if(bytes>32*1024*1024)throw new IOException("Folder too large");
                     }
@@ -68,7 +68,7 @@ public class ImportActivity extends Activity {
             File stage=new File(getCacheDir(),"game-import");String error=null;
             try {
                 GameData.clear(stage);if(!stage.mkdirs())throw new IOException("Cannot prepare import");count=0;bytes=0;
-                if(request==1)folder(uri,DocumentsContract.getTreeDocumentId(uri),stage,0);
+                if(request==1)folder(uri,DocumentsContract.getTreeDocumentId(uri),stage,0,"");
                 else {InputStream in=getContentResolver().openInputStream(uri);if(in==null)throw new IOException("Cannot open ZIP");GameData.zip(in,stage);}
                 GameData.install(stage,getFilesDir());
             }catch(Exception e){error=e.getMessage();}
