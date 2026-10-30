@@ -18,7 +18,8 @@
     <string name="cancel">Anuluj</string>
     <string name="ok">OK</string>
     <string name="pause_title">Pauza i zapis gry</string>
-    <string name="control_hint">Kierunek + AKCJA: zbieranie obok Murphy’ego. Przytrzymaj AKCJĘ, aby położyć czerwony dysk.\nPad: krzyżak / lewa gałka · X: akcja · A: zatwierdź · START: pauza.</string>
+    <string name="control_hint">Kierunek + AKCJA: zbieranie obok Murphy’ego. Przytrzymaj AKCJĘ, aby położyć czerwony dysk. Czerwony dysk # (u góry po prawej): liczba niesionych dysków.\nPad: krzyżak / lewa gałka · X: akcja · A: zatwierdź · START: pauza.
+Przycisk mapy (u góry po prawej) lub L3: zatrzymaj poziom i oglądaj mapę kierunkami.</string>
     <string name="save_progress">Zapisz postęp poziomu</string>
     <string name="save_exit">Zapisz i zakończ</string>
     <string name="resume_saved">Wznów zapisany poziom</string>
@@ -35,7 +36,7 @@
     <string name="player_name">Imię gracza</string>
     <string name="action">AKCJA</string>
     <string name="enable_touch">WŁĄCZ DOTYK</string>
-    <string name="hud_description">Sterowanie Supaplex: kierunki, akcja i zatwierdzanie. Menu u góry po lewej, pauza po prawej.</string>
+    <string name="hud_description">Sterowanie Supaplex: kierunki, akcja i zatwierdzanie. Menu u góry po lewej, liczba czerwonych dysków, pauza i podgląd mapy po prawej.</string>
     <string name="language">Język / Language</string>
     <string name="language_scope">Język zmienia przyciski i okna Androida. Oryginalne menu gry DOS pozostaje po angielsku.</string>
     <string name="controls">Sterowanie dotykowe</string>
@@ -65,4 +66,6 @@
     <string name="spacing_x">Odstęp strzałek lewo/prawo</string>
     <string name="spacing_y">Odstęp strzałek góra/dół</string>
     <string name="placement_help">Odstępy zmieniają odległość między strzałkami w układach przyciskowych, bez zmiany ich wielkości. Suwak krawędzi przesuwa sterowanie w stronę środka lub brzegu. Ograniczenia układu utrzymują przyciski na ekranie i rozdzielają obie grupy kierunków.</string>
+    <string name="map_view_hint">MAPA · kierunki przesuwają widok</string>
+    <string name="map_view_unavailable">Podgląd mapy działa tylko w trakcie poziomu.</string>
 </resources>

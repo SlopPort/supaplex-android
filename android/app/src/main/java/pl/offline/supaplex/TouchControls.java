@@ -110,11 +110,15 @@ public final class TouchControls extends View {
         color(0xffeefaff,1);for(int i=-1;i<=1;i++)c.drawCircle(l+32+i*6,32,1.7f,paint);
         circle(c,r-32,32,21,active("pause"),false);
         color(0xffeefaff,1);c.drawRoundRect(r-38,25,r-34,39,1,1,paint);c.drawRoundRect(r-30,25,r-26,39,1,1,paint);
+        boolean mapView=GameActivity.nativeIsMapView();
+        drawMapButton(c,r-80,32,mapView);
         if(padMode) {
             color(0xff05151e,.9f);c.drawRoundRect(l+62,13,l+161,51,19,19,paint);
             text(c,game.text(R.string.enable_touch),l+111,36,9,aqua,1);
         } else {
-            text(c,padConnected?"SUPAPLEX  /  PAD":"SUPAPLEX",l+112,36,10,0xffe1eef4,.85f);
+            if(mapView)text(c,game.text(R.string.map_view_hint),l+150,36,10,aqua,1);
+            else text(c,padConnected?"SUPAPLEX  /  PAD":"SUPAPLEX",l+112,36,10,0xffe1eef4,.85f);
+            drawDisksButton(c,r-128,32);
             int direction=0;float baseX=dx,baseY=dy;
             Finger movement=null;
             for(Finger f:fingers.values())if(f.target.equals("dpad")) {
@@ -158,6 +162,19 @@ public final class TouchControls extends View {
             Path check=path;check.reset();check.moveTo(cx-8,cy);check.lineTo(cx-2,cy+6);check.lineTo(cx+9,cy-7);c.drawPath(check,paint);paint.setStyle(Paint.Style.FILL);
         }
         c.restore();
+    }
+    private void drawMapButton(Canvas c,float x,float y,boolean on) {
+        circle(c,x,y,21,on || active("map"),on);
+        paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(1.8f);paint.setStrokeJoin(Paint.Join.ROUND);color(on?aqua:0xffeefaff,1);
+        Path fold=path;fold.reset();fold.moveTo(x-10,y-6);fold.lineTo(x-4,y-9);fold.lineTo(x+4,y-6);fold.lineTo(x+10,y-9);
+        fold.lineTo(x+10,y+6);fold.lineTo(x+4,y+9);fold.lineTo(x-4,y+6);fold.lineTo(x-10,y+9);fold.close();c.drawPath(fold,paint);
+        line(c,x-4,y-9,x-4,y+6);line(c,x+4,y-6,x+4,y+9);paint.setStyle(Paint.Style.FILL);
+    }
+    private void drawDisksButton(Canvas c,float x,float y) {
+        circle(c,x,y,21,active("disks"),false);
+        color(0xffe8303a,1);c.drawCircle(x-3,y,7.5f,paint);
+        color(0xff05151e,1);c.drawCircle(x-3,y,2,paint);
+        text(c,"#",x+9,y+10,10,0xffeefaff,1);
     }
     private boolean inside(float x,float y,float cx,float cy,float radius) {return Math.hypot(x-cx,y-cy)<=radius;}
     private void drawAction(Canvas c,float x,float y) {
@@ -214,7 +231,9 @@ public final class TouchControls extends View {
     private String hit(float x,float y) {
         if(inside(x,y,safeLeft/unit+32,32,25))return "menu";
         if(inside(x,y,vw-safeRight/unit-32,32,25))return "pause";
+        if(inside(x,y,vw-safeRight/unit-80,32,23))return "map";
         if(padMode) return y<57 && x>safeLeft/unit+60 && x<safeLeft/unit+165?"restore":null;
+        if(inside(x,y,vw-safeRight/unit-128,32,23))return "disks";
         if(inside(x,y,ax,ay,ar+9))return "action";
         if((style==SPLIT || style==DUAL) && inside(x,y,secondaryActionX,ay,ar+9))return "action";
         if(inside(x,y,cx,cy,cr+8))return "confirm";
@@ -242,6 +261,7 @@ public final class TouchControls extends View {
             } else if(f.target.equals("action") && (inside(f.x,f.y,ax,ay,ar*1.6f)
                 || (style==SPLIT || style==DUAL) && inside(f.x,f.y,secondaryActionX,ay,ar*1.6f)))keys.add(KeyEvent.KEYCODE_SPACE);
             else if(f.target.equals("confirm") && inside(f.x,f.y,cx,cy,cr*1.7f))keys.add(KeyEvent.KEYCODE_ENTER);
+            else if(f.target.equals("disks"))keys.add(KeyEvent.KEYCODE_SHIFT_RIGHT);
         }
         if(style==SPLIT || style==DUAL) {lastDirection=splitDirection;if(splitDirection!=0)keys.add(splitDirection);}
         game.setTouchKeys(keys);invalidate();
@@ -276,6 +296,7 @@ public final class TouchControls extends View {
             if(f!=null && f.target.equals(hit(x,y))) {
                 if(f.target.equals("menu"))game.showOptions();
                 else if(f.target.equals("pause"))game.togglePause();
+                else if(f.target.equals("map"))game.toggleMapView();
                 else if(f.target.equals("restore"))setPadMode(false);
             }
         } else if(action==MotionEvent.ACTION_CANCEL) {fingers.clear();movementOwner=verticalOwner=horizontalOwner=-1;}

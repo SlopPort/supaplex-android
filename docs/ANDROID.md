@@ -42,6 +42,15 @@ This is a manual continuation, not autosave or cloud sync. The state includes th
 
 The previous save is replaced only after the new temporary file has been written, flushed, and synchronized successfully. A failed save reports an error and keeps the previous slot. Do not uninstall to troubleshoot a save problem.
 
+## Map view and red disk count
+
+The top-right HUD has two extra buttons next to pause:
+
+- **Map (folded map icon):** freezes the level and lets the directions move the camera over the whole board. Murphy, enemies, falling objects, the random state and the level timer all stop, so nothing changes while you look. Press it again to return the camera to Murphy and continue. It works only while a level is being played; opening the pause menu turns it off. On a gamepad, press L3.
+- **Red disk # :** hold to show how many red disks Murphy carries, like Right Shift in the DOS game (B on a gamepad).
+
+Holding **ACTION** without a direction for about two seconds places a carried red disk, as in the original; move away before it explodes.
+
 ## Gamepads
 
 Connect a controller in Android's Bluetooth settings or through a supported USB connection. The game uses Android/SDL mappings; behavior can vary by controller and firmware.
@@ -56,6 +65,7 @@ Connect a controller in Android's Bluetooth settings or through a supported USB 
 | Capture / MODE or hardware MENU | Open or close the same menu, when Android delivers this key |
 | BACK / SELECT | Leave the level; this does not save it |
 | Y | Toggle the original status panel |
+| L3 (left stick press) | Toggle map view |
 | L1 / R1 | Change speed during play, or level set in the original menu |
 | HOME | Android system home screen |
 

@@ -1,0 +1,23 @@
+Map view and red disk count - manual device test
+Device: Huawei P9 Lite (VNS-L21), LineageOS, Android 10, 1920x1080
+Build: debug APK from this commit, installed as an update (same signing key, data kept)
+
+Map view
+- Map button appears left of pause during a resumed level.
+- On: top bar shows "MAP · directions move the view"; holding right/down
+  panned the camera to the right and bottom edges of the board.
+- Level timer stayed at 00:02:48 for the whole time map view was on.
+- Off: camera snapped back to Murphy, timer continued (00:02:51).
+
+Controls from the original game
+- Arrows: Murphy moved.
+- ACTION + arrow (collect without moving): checked by hand by the owner.
+- Hold ACTION: a red disk given through a temporary, uncommitted test hook
+  was planted after ~2 s and exploded (3x3); panel count went 01 -> 00.
+  No crash. The hook was removed and a clean build reinstalled.
+- Red disk # button: panel showed the carried count (00 / 01) while held.
+- P (hardware key): opened the OpenSupaplex pause menu.
+
+Data safety
+- App data was backed up before testing; afterwards all 208 files,
+  including CONTINUE.SAV, PLAYER.LST and HALLFAME.LST, matched the backup.

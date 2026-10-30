@@ -189,6 +189,9 @@ void handleSystemEvents()
 #if defined(__ANDROID__) && !defined(HEADLESS_TEST)
         if (androidOverlayIsPaused()) { sResetClockAfterOverlay = 1; SDL_Delay(10); }
         } while (androidOverlayIsPaused() && !gShouldExitGame);
+        // The level time must not advance while the player only looks at the map.
+        extern int androidMapViewIsActive(void);
+        if (androidMapViewIsActive()) sResetClockAfterOverlay = 1;
 #endif
     }
 

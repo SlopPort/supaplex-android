@@ -7,8 +7,18 @@
 extern uint8_t gIsInMainMenu;
 extern uint16_t gCurrentSelectedLevelIndex;
 extern void loadAndroidContinuation(void);
-static SDL_atomic_t request = {0}, canSave = {0}, continuationLoad = {0}, levelActive = {0};
-void androidSetLevelActive(int active) { SDL_AtomicSet(&levelActive, active); }
+static SDL_atomic_t request = {0}, canSave = {0}, continuationLoad = {0}, levelActive = {0}, mapView = {0};
+void androidSetLevelActive(int active) { SDL_AtomicSet(&mapView, 0); SDL_AtomicSet(&levelActive, active); }
+/* Map view freezes the level and pans the camera; it is only accepted while a level is playable. */
+JNIEXPORT jboolean JNICALL Java_pl_offline_supaplex_GameActivity_nativeSetMapView(JNIEnv *env, jclass cls, jboolean enabled)
+{
+    if (enabled && !SDL_AtomicGet(&canSave)) return JNI_FALSE;
+    SDL_AtomicSet(&mapView, enabled ? 1 : 0);
+    return JNI_TRUE;
+}
+JNIEXPORT jboolean JNICALL Java_pl_offline_supaplex_GameActivity_nativeIsMapView(JNIEnv *env, jclass cls)
+{ return SDL_AtomicGet(&mapView) && SDL_AtomicGet(&levelActive) ? JNI_TRUE : JNI_FALSE; }
+int androidMapViewIsActive(void) { return SDL_AtomicGet(&mapView) && SDL_AtomicGet(&levelActive); }
 JNIEXPORT jboolean JNICALL Java_pl_offline_supaplex_GameActivity_nativeCanSaveProgress(JNIEnv *env, jclass cls)
 { return SDL_AtomicGet(&canSave) ? JNI_TRUE : JNI_FALSE; }
 JNIEXPORT jboolean JNICALL Java_pl_offline_supaplex_GameActivity_nativeProgressCommand(JNIEnv *env, jclass cls, jint command)

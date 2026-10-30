@@ -18,7 +18,8 @@
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="pause_title">Pause and save</string>
-    <string name="control_hint">Direction + ACTION: collect beside Murphy. Hold ACTION to place a red disk.\nGamepad: D-pad / left stick · X: action · A: confirm · START: pause.</string>
+    <string name="control_hint">Direction + ACTION: collect beside Murphy. Hold ACTION to place a red disk. Red disk # (top right): show carried red disks.\nGamepad: D-pad / left stick · X: action · A: confirm · START: pause.
+Map button (top right) or L3: freeze the level and look around the map with the directions.</string>
     <string name="save_progress">Save level progress</string>
     <string name="save_exit">Save and quit</string>
     <string name="resume_saved">Resume saved level</string>
@@ -35,7 +36,7 @@
     <string name="player_name">Player name</string>
     <string name="action">ACTION</string>
     <string name="enable_touch">SHOW TOUCH</string>
-    <string name="hud_description">Supaplex direction, action and confirm controls. Menu at top left, pause at top right.</string>
+    <string name="hud_description">Supaplex direction, action and confirm controls. Menu at top left, red disk count, pause and map view at top right.</string>
     <string name="language">Language / Język</string>
     <string name="language_scope">Language changes the Android buttons and dialogs. The original DOS game menus stay in English.</string>
     <string name="controls">Touch controls</string>
@@ -65,4 +66,6 @@
     <string name="spacing_x">Left/right arrow spacing</string>
     <string name="spacing_y">Up/down arrow spacing</string>
     <string name="placement_help">Spacing changes the gaps between arrow buttons in the button layouts, without resizing them. The edge slider moves controls toward or away from the centre. Layout limits keep the buttons on screen and the two movement groups apart.</string>
+    <string name="map_view_hint">MAP · directions move the view</string>
+    <string name="map_view_unavailable">Map view works only while a level is being played.</string>
 </resources>

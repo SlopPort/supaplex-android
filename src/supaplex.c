@@ -4037,6 +4037,28 @@ void handleGameIterationFinished()
     }
 }
 
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+// Android map view: directions pan the camera over the frozen level. Nothing
+// in the simulation (RNG, frame counter, Murphy, enemies) is touched, so
+// leaving the view resumes the level exactly where it was.
+static void updateAndroidMapView(void)
+{
+    static const int16_t kMapViewScrollSpeed = 6;
+    int16_t maxScrollX = kLevelBitmapWidth - kScreenWidth;
+    int16_t maxScrollY = kLevelBitmapHeight - kScreenHeight + (gShouldShowGamePanel ? kPanelBitmapHeight : 0);
+    int16_t scrollX = gScrollOffsetX;
+    int16_t scrollY = gScrollOffsetY;
+
+    if (isLeftButtonPressed()) scrollX -= kMapViewScrollSpeed;
+    if (isRightButtonPressed()) scrollX += kMapViewScrollSpeed;
+    if (isUpButtonPressed()) scrollY -= kMapViewScrollSpeed;
+    if (isDownButtonPressed()) scrollY += kMapViewScrollSpeed;
+
+    gScrollOffsetX = CLAMP(scrollX, 0, maxScrollX);
+    gScrollOffsetY = CLAMP(scrollY, 0, maxScrollY);
+}
+#endif
+
 void runLevel() //    proc near       ; CODE XREF: start+35Cp
 {
     // 01ED:1E58
@@ -4095,6 +4117,22 @@ void runLevel() //    proc near       ; CODE XREF: start+35Cp
 
         // loc_48B23:              ; CODE XREF: runLevel+63j
         getMouseStatus(NULL, NULL, &mouseButtonsStatus);
+
+#if defined(__ANDROID__) && !defined(HEADLESS_TEST)
+        extern int androidMapViewIsActive(void);
+        if (androidMapViewIsActive() && gIsPlayingDemo == 0 && gQuitLevelCountdown == 0)
+        {
+            updateAndroidMapView();
+            drawCurrentLevelViewport(gCurrentPanelHeight);
+            videoLoop();
+            handleGameIterationFinished();
+            if (gShouldExitGame != 0)
+            {
+                break;
+            }
+            continue;
+        }
+#endif
 
         // loc_48B38:              ; CODE XREF: runLevel+6Ej runLevel+75j
         if (gIsDebugModeEnabled != 0)

@@ -31,6 +31,8 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     public static native boolean nativeCanSaveProgress();
     public static native boolean nativeProgressCommand(int command);
     public static native void nativeSelectContinuation();
+    public static native boolean nativeSetMapView(boolean enabled);
+    public static native boolean nativeIsMapView();
     private File progressFile() { return new File(getFilesDir(), "CONTINUE.SAV"); }
     String text(int resource) { return (uiContext==null?this:uiContext).getString(resource); }
     private void applyLanguage(String language) {
@@ -195,7 +197,7 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         // briefly sees both axes held during a deliberate turn.
         for (int code : new HashSet<>(held)) {
             if (desired.contains(code) || releases.containsKey(code)) continue;
-            long minimum = code == KeyEvent.KEYCODE_SPACE || code == KeyEvent.KEYCODE_ENTER ? 75 : 0;
+            long minimum = code == KeyEvent.KEYCODE_SPACE || code == KeyEvent.KEYCODE_ENTER || code == KeyEvent.KEYCODE_SHIFT_RIGHT ? 75 : 0;
             long delay = Math.max(0, minimum - (SystemClock.uptimeMillis() - pressedAt.get(code)));
             Runnable release = () -> {
                 releases.remove(code); pressedAt.remove(code);
@@ -227,6 +229,12 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         }, 100);
     }
     void togglePause() { showOptions(); }
+    void toggleMapView() {
+        boolean enable=!nativeIsMapView();
+        releaseAll();
+        if(!nativeSetMapView(enable)) Toast.makeText(this,text(R.string.map_view_unavailable),Toast.LENGTH_SHORT).show();
+        controls.invalidate();
+    }
     private void requestDataImport() {
         if(progressBusy)return;
         boolean canSave=nativeCanSaveProgress();
@@ -241,6 +249,8 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
     void showOptions() {
         if (options != null && options.isShowing()) return;
         releaseAll(); nativeSetOverlayPaused(true);
+        // Leaving the level or answering a DOS prompt needs normal input again.
+        nativeSetMapView(false); controls.invalidate();
         LinearLayout body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL); body.setPadding(dp(24), dp(8), dp(24), dp(12));
         TextView hint = new TextView(this);
@@ -340,6 +350,10 @@ public class GameActivity extends SDLActivity implements InputManager.InputDevic
         int source = event.getSource();
         if (nativeReady && (event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_MODE || event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_START || event.getKeyCode() == KeyEvent.KEYCODE_MENU)) {
             if (event.getAction() == KeyEvent.ACTION_UP) showOptions();
+            return true;
+        }
+        if (nativeReady && event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_THUMBL) {
+            if (event.getAction() == KeyEvent.ACTION_UP) toggleMapView();
             return true;
         }
         if ((source & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
